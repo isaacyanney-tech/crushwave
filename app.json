@@ -64,7 +64,17 @@
     },
     "extra": {
       "supabaseUrl": "https://ccefprnjkgdpbqbwjlso.supabase.co",
-      "supabasePublishableKey": "sb_publishable_AXGzJdQ9qiZ_soZoiGglCA_qtBTCGwR"
+      "supabasePublishableKey": "sb_publishable_AXGzJdQ9qiZ_soZoiGglCA_qtBTCGwR",
+      "eas": {
+        "projectId": "1ce01b4b-34e7-48da-be59-8db83e38e7fb"
+      }
+    },
+    "owner": "isaacyanney143",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1ce01b4b-34e7-48da-be59-8db83e38e7fb"
     }
   }
 }
