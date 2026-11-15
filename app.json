@@ -2,6 +2,10 @@
   "expo": {
     "name": "Crushwave",
     "slug": "crushwave",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "scheme": "crushwave",
     "version": "0.1.0",
     "orientation": "portrait",
