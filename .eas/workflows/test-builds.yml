@@ -1,0 +1,20 @@
+name: Test builds (Android install file + iPhone Expo Go update)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  android_apk:
+    name: Android install file (APK)
+    type: build
+    params:
+      platform: android
+      profile: preview
+
+  expo_go_update:
+    name: Update for Expo Go (iPhone)
+    type: update
+    environment: preview
+    params:
+      branch: preview
+      message: Test version for Expo Go

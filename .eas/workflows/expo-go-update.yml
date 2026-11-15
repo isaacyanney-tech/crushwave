@@ -1,0 +1,13 @@
+name: Update for Expo Go (iPhone and Android)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  expo_go_update:
+    name: Update for Expo Go
+    type: update
+    environment: preview
+    params:
+      branch: preview
+      message: Test version for Expo Go
