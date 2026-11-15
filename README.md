@@ -64,6 +64,7 @@ Use the Supabase Table Editor.
 - **Selfie verification:** open `verification_requests` and view the selfie in Storage → `verifications`. Set `status` to `approved` to give the blue tick automatically, or to `rejected`.
 - **Add another school:** insert a row in `schools` with its email domains and set `enabled = true`. You don't need to rebuild the app.
 - **App store reviewer account:** add their exact email to `email_exceptions`, linked to a school.
+- **Demo profiles:** five demo women (marked `is_demo` in `profiles`) are there for testing. Liking one matches straight away and she sends the first message. Their photos are AI-generated. Remove them before launch by running `supabase/demo/remove_demo_profiles.sql` in the SQL Editor.
 
 ## Running the app
 
@@ -87,3 +88,4 @@ npx eas-cli@latest build --profile preview --platform android
 - [ ] Create Google Play and Apple developer accounts.
 - [ ] Add the reviewer demo account.
 - [ ] Turn on automatic photo scanning for nudity.
+- [ ] Remove the demo profiles (`supabase/demo/remove_demo_profiles.sql`).
