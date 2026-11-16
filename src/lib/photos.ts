@@ -29,6 +29,12 @@ async function uploadJpeg(bucket: 'photos' | 'verifications', userId: string, ur
   return path;
 }
 
+// Photos picked on this phone, so they show instantly while the upload's link is fetched.
+const localPreviews = new Map<string, string>();
+export function localPreview(path: string) {
+  return localPreviews.get(path);
+}
+
 export async function pickProfilePhoto(userId: string): Promise<string | null> {
   const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!perm.granted) throw new Error('Allow photo access in Settings to add pictures.');
@@ -41,7 +47,9 @@ export async function pickProfilePhoto(userId: string): Promise<string | null> {
   });
   if (res.canceled || !res.assets[0]) return null;
   const clean = await cleanImage(res.assets[0].uri);
-  return uploadJpeg('photos', userId, clean);
+  const path = await uploadJpeg('photos', userId, clean);
+  localPreviews.set(path, clean);
+  return path;
 }
 
 export async function takeVerificationSelfie(userId: string): Promise<string | null> {

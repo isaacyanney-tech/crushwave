@@ -19,11 +19,11 @@ function Gate() {
     if (loading) return;
     SplashScreen.hideAsync().catch(() => undefined);
     const first = segments[0] as string | undefined;
-    const inAuth = first === 'sign-in' || first === 'verify-code';
+    const inAuth = first === 'welcome' || first === 'sign-in' || first === 'verify-code';
     const inOnboarding = first === 'onboarding' || first === 'privacy' || first === 'rules';
 
     if (!session) {
-      if (!inAuth) router.replace('/sign-in');
+      if (!inAuth) router.replace('/welcome');
     } else if (!profile) {
       if (!inOnboarding) router.replace('/onboarding');
     } else if (profile.status !== 'active') {
@@ -62,12 +62,13 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="welcome" options={{ headerShown: false }} />
         <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-        <Stack.Screen name="verify-code" options={{ title: '' }} />
+        <Stack.Screen name="verify-code" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="suspended" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="chat/[id]" options={{ title: '' }} />
+        <Stack.Screen name="chat/[id]" options={{ title: '', headerBackTitle: 'Chats' }} />
         <Stack.Screen name="edit-profile" options={{ title: 'Edit profile' }} />
         <Stack.Screen name="settings" options={{ title: 'Settings & privacy' }} />
         <Stack.Screen name="safety" options={{ title: 'Safety Centre' }} />
