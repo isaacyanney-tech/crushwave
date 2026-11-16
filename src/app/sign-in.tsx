@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StepHeader } from '@/components/Steps';
 import { Button, Field, H1, P } from '@/components/ui';
 import { friendlyError, supabase } from '@/lib/supabase';
-import { colors, radius, space } from '@/lib/theme';
+import { ICON, colors, space, type } from '@/lib/theme';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -50,7 +50,7 @@ export default function SignIn() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
           <H1>Your student email</H1>
-          <P muted>New here or coming back, it’s the same. We’ll email you a 6-digit code. No password needed.</P>
+          <P muted>New or returning, it works the same way. We email you a 6-digit code, so there’s no password to remember.</P>
           <Field
             placeholder="e.g. 10326626@upsamail.edu.gh"
             value={email}
@@ -65,7 +65,7 @@ export default function SignIn() {
             onSubmitEditing={sendCode}
           />
           <View style={styles.note}>
-            <Ionicons name="lock-closed-outline" size={18} color={colors.primaryDark} />
+            <Ionicons name="lock-closed-outline" size={ICON} color={colors.muted} />
             <Text style={styles.noteText}>
               Your email only proves you’re a student. Nobody on Crushwave ever sees it.
             </Text>
@@ -73,7 +73,7 @@ export default function SignIn() {
         </ScrollView>
         <View style={styles.footer}>
           <Button title="Send my code" onPress={sendCode} loading={busy} disabled={!email.trim()} />
-          <Text style={styles.small}>By continuing you confirm you are 18 or older.</Text>
+          <Text style={styles.small}>By continuing you confirm you’re 18 or older</Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -81,16 +81,9 @@ export default function SignIn() {
 }
 
 const styles = StyleSheet.create({
-  body: { paddingHorizontal: space(5), paddingTop: space(4) },
-  note: {
-    flexDirection: 'row',
-    gap: space(2),
-    alignItems: 'flex-start',
-    backgroundColor: colors.tint,
-    borderRadius: radius.md,
-    padding: space(3),
-  },
-  noteText: { flex: 1, fontSize: 13, lineHeight: 19, color: colors.ink },
+  body: { paddingHorizontal: space(5), paddingTop: space(6) },
+  note: { flexDirection: 'row', gap: space(2), alignItems: 'flex-start' },
+  noteText: { ...type.small, flex: 1 },
   footer: { paddingHorizontal: space(5), paddingBottom: space(3) },
-  small: { fontSize: 12, color: colors.muted, marginTop: space(3), textAlign: 'center' },
+  small: { ...type.meta, marginTop: space(3), textAlign: 'center' },
 });

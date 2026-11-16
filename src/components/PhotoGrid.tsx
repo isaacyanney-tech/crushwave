@@ -6,7 +6,7 @@ import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'rea
 import { MAX_PHOTOS } from '@/lib/constants';
 import { pickProfilePhoto } from '@/lib/photos';
 import { friendlyError } from '@/lib/supabase';
-import { colors, radius, space } from '@/lib/theme';
+import { colors, radius, space, type } from '@/lib/theme';
 import { usePhotoUrls } from './ProfileCard';
 
 export function PhotoGrid({
@@ -60,17 +60,17 @@ export function PhotoGrid({
         {path && urls[path] ? <Image source={{ uri: urls[path] }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} /> : null}
         {uploading ? (
           <View style={styles.uploading}>
-            <ActivityIndicator color={colors.primary} size="large" />
-            <Text style={styles.uploadingText}>Uploading…</Text>
+            <ActivityIndicator color={colors.muted} size="large" />
+            <Text style={styles.uploadingText}>Uploading</Text>
           </View>
         ) : !path ? (
           <View style={{ alignItems: 'center', gap: space(2) }}>
-            <Ionicons name="camera" size={40} color={colors.primary} />
-            <Text style={styles.addText}>Tap to add a photo</Text>
+            <Ionicons name="camera-outline" size={28} color={colors.secondary} />
+            <Text style={styles.addText}>Add a photo</Text>
           </View>
         ) : (
           <View style={styles.changeTag}>
-            <Ionicons name="pencil" size={14} color="#fff" />
+            <Ionicons name="pencil" size={14} color={colors.white} />
             <Text style={styles.changeText}>Change</Text>
           </View>
         )}
@@ -89,7 +89,7 @@ export function PhotoGrid({
               {urls[path] ? (
                 <Image source={{ uri: urls[path] }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
               ) : (
-                <ActivityIndicator color={colors.primary} />
+                <ActivityIndicator color={colors.muted} />
               )}
               {i === 0 ? (
                 <View style={styles.mainTag}>
@@ -97,7 +97,7 @@ export function PhotoGrid({
                 </View>
               ) : null}
               <View style={styles.editIcon}>
-                <Ionicons name="ellipsis-horizontal" size={14} color="#fff" />
+                <Ionicons name="ellipsis-horizontal" size={14} color={colors.white} />
               </View>
             </Pressable>
           ) : (
@@ -109,9 +109,9 @@ export function PhotoGrid({
               accessibilityLabel="Add photo"
             >
               {uploading && i === photos.length ? (
-                <ActivityIndicator color={colors.primary} />
+                <ActivityIndicator color={colors.muted} />
               ) : i === photos.length ? (
-                <Ionicons name="add-circle" size={32} color={colors.primary} />
+                <Ionicons name="add" size={24} color={colors.secondary} />
               ) : null}
             </Pressable>
           ),
@@ -127,9 +127,9 @@ const styles = StyleSheet.create({
   slot: {
     width: '31.5%',
     aspectRatio: 4 / 5,
-    borderRadius: radius.md,
+    borderRadius: radius.control,
     overflow: 'hidden',
-    backgroundColor: colors.line,
+    backgroundColor: colors.raised,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -137,51 +137,51 @@ const styles = StyleSheet.create({
     width: '72%',
     alignSelf: 'center',
     aspectRatio: 4 / 5,
-    borderRadius: radius.lg,
+    borderRadius: radius.card,
     overflow: 'hidden',
-    backgroundColor: colors.line,
+    backgroundColor: colors.raised,
     alignItems: 'center',
     justifyContent: 'center',
   },
   empty: {
     backgroundColor: colors.card,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: colors.primary,
+    borderColor: colors.muted,
   },
-  addText: { fontSize: 15, fontWeight: '700', color: colors.primaryDark },
+  addText: { ...type.label, color: colors.secondary },
   uploading: { alignItems: 'center', gap: space(2) },
-  uploadingText: { fontSize: 13, color: colors.muted },
+  uploadingText: type.meta,
   changeTag: {
     position: 'absolute',
-    right: 10,
-    bottom: 10,
+    right: space(3),
+    bottom: space(3),
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    borderRadius: radius.pill,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    gap: space(1),
+    backgroundColor: 'rgba(20,17,14,0.6)',
+    borderRadius: radius.tag,
+    paddingHorizontal: space(2),
+    paddingVertical: space(1),
   },
-  changeText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  changeText: { ...type.meta, color: colors.white },
   mainTag: {
     position: 'absolute',
-    left: 6,
-    bottom: 6,
-    backgroundColor: colors.primary,
-    borderRadius: radius.pill,
-    paddingHorizontal: 8,
+    left: space(2),
+    bottom: space(2),
+    backgroundColor: 'rgba(20,17,14,0.6)',
+    borderRadius: 4,
+    paddingHorizontal: space(2),
     paddingVertical: 2,
   },
-  mainTagText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  mainTagText: { ...type.meta, color: colors.white },
   editIcon: {
     position: 'absolute',
-    right: 6,
-    top: 6,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: radius.pill,
+    right: space(2),
+    top: space(2),
+    backgroundColor: 'rgba(20,17,14,0.5)',
+    borderRadius: 10,
     padding: 3,
   },
-  help: { fontSize: 12, color: colors.muted, marginTop: space(2) },
+  help: { ...type.meta, marginTop: space(2) },
 });

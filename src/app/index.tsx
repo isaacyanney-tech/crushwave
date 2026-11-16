@@ -6,7 +6,7 @@ import { colors } from '@/lib/theme';
 export default function Index() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
-      <ActivityIndicator color={colors.primary} />
+      <ActivityIndicator color={colors.muted} />
     </View>
   );
 }

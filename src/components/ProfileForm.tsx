@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { Prompt } from '@/lib/auth';
 import {
@@ -12,9 +12,9 @@ import {
   type Gender,
   type LookingFor,
 } from '@/lib/constants';
-import { colors, radius, space } from '@/lib/theme';
+import { colors, fonts, radius, space, type } from '@/lib/theme';
 import { PhotoGrid } from './PhotoGrid';
-import { Chip, ChipRow, Field, H2, P } from './ui';
+import { Chip, ChipRow, Field, FieldLabel, H2, P, TextLink } from './ui';
 
 export type ProfileFormValues = {
   first_name: string;
@@ -94,7 +94,7 @@ export function ProfileForm({
   return (
     <View>
       <H2>Photos</H2>
-      <P muted>Add up to 6 recent photos. Profiles with 3 or more photos get more likes. Your main photo should clearly show your face.</P>
+      <P muted>Up to 6 recent photos. Your main photo should clearly show your face.</P>
       <PhotoGrid userId={userId} photos={value.photos} onChange={(p) => set('photos', p)} />
 
       <View style={{ height: space(6) }} />
@@ -107,14 +107,14 @@ export function ProfileForm({
         hint="Only your first name is shown. Never your surname."
       />
 
-      <Text style={styles.label}>I am a</Text>
+      <FieldLabel>I am a</FieldLabel>
       <ChipRow>
         {GENDERS.map((g) => (
           <Chip key={g.value} label={g.label} selected={value.gender === g.value} onPress={() => set('gender', g.value)} />
         ))}
       </ChipRow>
 
-      <Text style={styles.label}>Show me</Text>
+      <FieldLabel>Show me</FieldLabel>
       <ChipRow>
         {GENDERS.map((g) => (
           <Chip
@@ -126,12 +126,12 @@ export function ProfileForm({
         ))}
       </ChipRow>
 
-      <Text style={styles.label}>I’m here for</Text>
+      <FieldLabel>I’m here for</FieldLabel>
       <ChipRow>
         {LOOKING_FOR.map((l) => (
           <Chip
             key={l.value}
-            label={`${l.emoji} ${l.label}`}
+            label={l.label}
             selected={value.looking_for === l.value}
             onPress={() => set('looking_for', l.value)}
           />
@@ -146,7 +146,7 @@ export function ProfileForm({
         maxLength={80}
       />
 
-      <Text style={styles.label}>Level (optional)</Text>
+      <FieldLabel>Level (optional)</FieldLabel>
       <ChipRow>
         {LEVELS.map((l) => (
           <Chip
@@ -175,7 +175,7 @@ export function ProfileForm({
         maxLength={500}
         multiline
         style={{ minHeight: 90, textAlignVertical: 'top' }}
-        hint={`${value.bio.length}/500`}
+        hint={`${value.bio.length} of 500`}
       />
 
       <H2>Interests</H2>
@@ -192,12 +192,12 @@ export function ProfileForm({
       </ChipRow>
 
       <H2>Prompts</H2>
-      <P muted>Pick up to 3 and answer them. They make it much easier to start a chat.</P>
+      <P muted>Pick up to 3 and answer them. They give people something to reply to.</P>
       <ChipRow>
         {(showAllPrompts ? PROMPTS : PROMPTS.slice(0, 5)).map((q) => (
           <Chip key={q} label={q} selected={!!value.prompts.find((p) => p.q === q)} onPress={() => togglePrompt(q)} />
         ))}
-        {!showAllPrompts ? <Chip label="More…" onPress={() => setShowAllPrompts(true)} /> : null}
+        {!showAllPrompts ? <Chip label="More prompts" onPress={() => setShowAllPrompts(true)} /> : null}
       </ChipRow>
       {value.prompts.map((p, idx) => (
         <View key={p.q} style={styles.promptBox}>
@@ -215,9 +215,9 @@ export function ProfileForm({
               set('prompts', next);
             }}
           />
-          <Pressable onPress={() => togglePrompt(p.q)}>
-            <Text style={styles.removePrompt}>Remove</Text>
-          </Pressable>
+          <View style={{ marginTop: space(2) }}>
+            <TextLink title="Remove" muted onPress={() => togglePrompt(p.q)} />
+          </View>
         </View>
       ))}
     </View>
@@ -225,16 +225,14 @@ export function ProfileForm({
 }
 
 const styles = StyleSheet.create({
-  label: { fontSize: 14, fontWeight: '600', color: colors.ink, marginBottom: space(2) },
   promptBox: {
     backgroundColor: colors.card,
-    borderRadius: radius.md,
+    borderRadius: radius.card,
     borderWidth: 1,
     borderColor: colors.line,
     padding: space(4),
     marginBottom: space(3),
   },
-  promptQ: { fontSize: 14, fontWeight: '700', color: colors.ink, marginBottom: space(2) },
-  promptInput: { fontSize: 16, color: colors.ink, minHeight: 44 },
-  removePrompt: { color: colors.muted, fontSize: 13, marginTop: space(2) },
+  promptQ: { ...type.small, marginBottom: space(2) },
+  promptInput: { fontFamily: fonts.regular, fontSize: 16, color: colors.ink, minHeight: 44 },
 });

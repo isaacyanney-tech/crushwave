@@ -1,33 +1,31 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, Text } from 'react-native';
+import { ScrollView } from 'react-native';
 
-import { Button, Chip, ChipRow, Field } from '@/components/ui';
+import { Button, Chip, ChipRow, Field, FieldLabel } from '@/components/ui';
 import { LEVELS, LOOKING_FOR } from '@/lib/constants';
 import { setFilters, useFilters } from '@/lib/filters';
-import { colors, space } from '@/lib/theme';
+import { space } from '@/lib/theme';
 
 export default function FiltersScreen() {
   const current = useFilters();
   const [f, setF] = useState(current);
 
-  const label = { fontSize: 14, fontWeight: '600' as const, color: colors.ink, marginBottom: space(2) };
-
   return (
     <ScrollView contentContainerStyle={{ padding: space(5), paddingBottom: space(16) }} keyboardShouldPersistTaps="handled">
-      <Text style={label}>Here for</Text>
+      <FieldLabel>Here for</FieldLabel>
       <ChipRow>
         {LOOKING_FOR.map((l) => (
           <Chip
             key={l.value}
-            label={`${l.emoji} ${l.label}`}
+            label={l.label}
             selected={f.lookingFor === l.value}
             onPress={() => setF({ ...f, lookingFor: f.lookingFor === l.value ? null : l.value })}
           />
         ))}
       </ChipRow>
 
-      <Text style={label}>Level</Text>
+      <FieldLabel>Level</FieldLabel>
       <ChipRow>
         {LEVELS.map((l) => (
           <Chip
