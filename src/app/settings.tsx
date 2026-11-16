@@ -2,12 +2,12 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
-import { Button, Card, H2 } from '@/components/ui';
+import { Button, Card, H2, P } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { deleteAllMyFiles } from '@/lib/photos';
 import { unregisterPush } from '@/lib/push';
 import { friendlyError, supabase } from '@/lib/supabase';
-import { colors, fonts, radius, space, type } from '@/lib/theme';
+import { colors, radius, space } from '@/lib/theme';
 
 function Toggle({ label, hint, value, onChange }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -16,7 +16,7 @@ function Toggle({ label, hint, value, onChange }: { label: string; hint?: string
         <Text style={styles.toggleLabel}>{label}</Text>
         {hint ? <Text style={styles.toggleHint}>{hint}</Text> : null}
       </View>
-      <Switch value={value} onValueChange={onChange} trackColor={{ true: colors.ink }} accessibilityLabel={label} />
+      <Switch value={value} onValueChange={onChange} trackColor={{ true: colors.primary }} />
     </View>
   );
 }
@@ -104,10 +104,10 @@ export default function Settings() {
         <Text style={styles.toggleLabel}>Age range</Text>
         <View style={styles.ageRow}>
           <TextInput style={styles.age} value={minAge} onChangeText={setMinAge} onBlur={saveAges} keyboardType="number-pad" maxLength={2} />
-          <Text style={type.small}>to</Text>
+          <Text style={{ color: colors.muted }}>to</Text>
           <TextInput style={styles.age} value={maxAge} onChangeText={setMaxAge} onBlur={saveAges} keyboardType="number-pad" maxLength={2} />
         </View>
-        <Text style={styles.toggleHint}>To change who you see (men, women or both), go to Edit profile.</Text>
+        <P muted>Change who you’re shown (men, women, everyone) in Edit profile.</P>
       </Card>
 
       <H2>About</H2>
@@ -117,26 +117,24 @@ export default function Settings() {
         <Button title="Privacy notice" variant="secondary" onPress={() => router.push('/privacy')} />
       </Card>
 
-      <Button title="Sign out" variant="secondary" onPress={doSignOut} style={[styles.gap, { marginTop: space(4) }]} />
+      <Button title="Sign out" variant="secondary" onPress={doSignOut} style={styles.gap} />
       <Button title="Delete my account" variant="danger" onPress={deleteAccount} loading={busy} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  toggle: { flexDirection: 'row', alignItems: 'center', gap: space(3), paddingVertical: space(3) },
-  toggleLabel: type.label,
-  toggleHint: { ...type.small, marginTop: space(1) },
-  ageRow: { flexDirection: 'row', alignItems: 'center', gap: space(3), marginTop: space(3), marginBottom: space(3) },
+  toggle: { flexDirection: 'row', alignItems: 'center', gap: space(3), paddingVertical: space(2) },
+  toggleLabel: { fontSize: 16, fontWeight: '600', color: colors.ink },
+  toggleHint: { fontSize: 13, color: colors.muted, marginTop: 2 },
+  ageRow: { flexDirection: 'row', alignItems: 'center', gap: space(3), marginVertical: space(3) },
   age: {
     width: 64,
     textAlign: 'center',
-    fontFamily: fonts.medium,
     fontSize: 18,
-    fontVariant: ['tabular-nums'],
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: radius.control,
+    borderRadius: radius.md,
     paddingVertical: space(2),
     color: colors.ink,
     backgroundColor: colors.bg,

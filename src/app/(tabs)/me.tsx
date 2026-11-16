@@ -9,7 +9,7 @@ import { ProfileCard, usePhotoUrls } from '@/components/ProfileCard';
 import { Button } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { LOOKING_FOR } from '@/lib/constants';
-import { ICON, colors, radius, space, type } from '@/lib/theme';
+import { colors, radius, space } from '@/lib/theme';
 
 function age(iso: string) {
   const b = new Date(iso);
@@ -24,12 +24,14 @@ type IconName = keyof typeof Ionicons.glyphMap;
 function Row({ icon, label, sub, onPress, last }: { icon: IconName; label: string; sub?: string; onPress: () => void; last?: boolean }) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.row, !last && styles.rowLine, pressed && { opacity: 0.6 }]}>
-      <Ionicons name={icon} size={ICON} color={colors.secondary} style={styles.rowIcon} />
+      <View style={styles.rowIcon}>
+        <Ionicons name={icon} size={20} color={colors.ink} />
+      </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.rowText}>{label}</Text>
         {sub ? <Text style={styles.rowSub}>{sub}</Text> : null}
       </View>
-      <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+      <Ionicons name="chevron-forward" size={18} color={colors.muted} />
     </Pressable>
   );
 }
@@ -43,15 +45,16 @@ export default function Me() {
   const main = profile.photos[0];
   const looking = LOOKING_FOR.find((l) => l.value === profile.looking_for);
 
-  // What sign-up skipped, as a short to-do list.
+  // Simple "profile strength" to nudge people to finish what sign-up skipped.
   const todo: { label: string; done: boolean }[] = [
     { label: 'Add 3 or more photos', done: profile.photos.length >= 3 },
     { label: 'Write a short bio', done: profile.bio.trim().length > 0 },
     { label: 'Answer a prompt', done: profile.prompts.length > 0 },
     { label: 'Pick some interests', done: profile.interests.length > 0 },
-    { label: 'Get verified', done: profile.is_verified },
+    { label: 'Get your blue tick', done: profile.is_verified },
   ];
   const done = todo.filter((t) => t.done).length;
+  const pct = Math.round((done / todo.length) * 100);
 
   return (
     <ScrollView contentContainerStyle={{ padding: space(4), paddingBottom: space(12) }}>
@@ -59,14 +62,14 @@ export default function Me() {
         <Pressable onPress={() => router.push('/edit-profile')} style={styles.avatarWrap}>
           {main && urls[main] ? <Image source={{ uri: urls[main] }} style={styles.avatar} contentFit="cover" /> : <View style={styles.avatar} />}
           <View style={styles.avatarEdit}>
-            <Ionicons name="pencil" size={12} color={colors.white} />
+            <Ionicons name="pencil" size={13} color="#fff" />
           </View>
         </Pressable>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space(2), marginTop: space(4) }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space(3) }}>
           <Text style={styles.name}>
             {profile.first_name}, {age(profile.birthdate)}
           </Text>
-          {profile.is_verified ? <Ionicons name="checkmark-circle" size={18} color={colors.positive} accessibilityLabel="Verified" /> : null}
+          {profile.is_verified ? <Ionicons name="checkmark-circle" size={20} color={colors.verified} /> : null}
         </View>
         <Text style={styles.meta}>
           {[schoolName ? `${schoolName} student` : 'Student', looking?.label].filter(Boolean).join(' · ')}
@@ -80,20 +83,18 @@ export default function Me() {
       {done < todo.length ? (
         <Pressable style={styles.strength} onPress={() => router.push('/edit-profile')}>
           <View style={styles.strengthTop}>
-            <Text style={styles.strengthTitle}>Finish your profile</Text>
-            <Text style={styles.strengthPct}>
-              {done} of {todo.length} done
-            </Text>
+            <Text style={styles.strengthTitle}>Profile strength</Text>
+            <Text style={styles.strengthPct}>{pct}%</Text>
           </View>
           <View style={styles.track}>
-            <View style={[styles.fill, { width: `${(done / todo.length) * 100}%` }]} />
+            <View style={[styles.fill, { width: `${pct}%` }]} />
           </View>
           {todo
             .filter((t) => !t.done)
             .slice(0, 2)
             .map((t) => (
               <View key={t.label} style={styles.todo}>
-                <Ionicons name="add" size={ICON} color={colors.secondary} />
+                <Ionicons name="add-circle-outline" size={18} color={colors.primary} />
                 <Text style={styles.todoText}>{t.label}</Text>
               </View>
             ))}
@@ -102,7 +103,7 @@ export default function Me() {
 
       {!profile.is_verified ? (
         <View style={styles.group}>
-          <Row icon="checkmark-circle-outline" label="Get verified" sub="Take a quick selfie to get a verified tick" onPress={() => router.push('/verify-selfie')} last />
+          <Row icon="checkmark-circle-outline" label="Get verified" sub="Take a quick selfie to get a blue tick" onPress={() => router.push('/verify-selfie')} last />
         </View>
       ) : null}
 
@@ -121,7 +122,7 @@ export default function Me() {
 
       <Modal visible={preview} animationType="slide" onRequestClose={() => setPreview(false)}>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg, padding: space(4) }}>
-          <Text style={styles.previewTitle}>How others see you</Text>
+          <Text style={styles.previewTitle}>This is how others see you</Text>
           <ProfileCard
             profile={{ ...profile, age: age(profile.birthdate) }}
             footer={<Button title="Close" variant="secondary" onPress={() => setPreview(false)} />}
@@ -133,53 +134,68 @@ export default function Me() {
 }
 
 const styles = StyleSheet.create({
-  header: { alignItems: 'center', paddingTop: space(4), paddingBottom: space(6) },
+  header: {
+    alignItems: 'center',
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.line,
+    padding: space(5),
+    marginBottom: space(4),
+  },
   avatarWrap: { position: 'relative' },
-  avatar: { width: 104, height: 104, borderRadius: 52, backgroundColor: colors.raised },
+  avatar: { width: 104, height: 104, borderRadius: 52, backgroundColor: colors.line },
   avatarEdit: {
     position: 'absolute',
-    right: 4,
-    bottom: 4,
+    right: 2,
+    bottom: 2,
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: colors.ink,
+    backgroundColor: colors.primary,
     borderWidth: 2,
-    borderColor: colors.bg,
+    borderColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  name: { ...type.title, marginBottom: 0 },
-  meta: { ...type.small, marginTop: space(1) },
-  headerBtns: { flexDirection: 'row', gap: space(3), marginTop: space(6), alignSelf: 'stretch' },
+  name: { fontSize: 24, fontWeight: '700', color: colors.ink },
+  meta: { fontSize: 14, color: colors.muted, marginTop: 4 },
+  headerBtns: { flexDirection: 'row', gap: space(3), marginTop: space(5), alignSelf: 'stretch' },
   strength: {
     backgroundColor: colors.card,
-    borderRadius: radius.card,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.line,
     padding: space(4),
-    marginBottom: space(6),
+    marginBottom: space(4),
   },
-  strengthTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: space(3) },
-  strengthTitle: type.label,
-  strengthPct: { ...type.meta, fontVariant: ['tabular-nums'] },
-  track: { height: 2, backgroundColor: colors.line, overflow: 'hidden', marginBottom: space(3) },
-  fill: { height: 2, backgroundColor: colors.ink },
-  todo: { flexDirection: 'row', alignItems: 'center', gap: space(2), height: 32 },
-  todoText: { ...type.small, color: colors.ink },
-  groupTitle: { ...type.heading, marginBottom: space(2), marginLeft: space(1) },
+  strengthTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: space(2) },
+  strengthTitle: { fontSize: 15, fontWeight: '700', color: colors.ink },
+  strengthPct: { fontSize: 15, fontWeight: '700', color: colors.primaryDark },
+  track: { height: 6, borderRadius: 3, backgroundColor: colors.line, overflow: 'hidden', marginBottom: space(3) },
+  fill: { height: 6, borderRadius: 3, backgroundColor: colors.primary },
+  todo: { flexDirection: 'row', alignItems: 'center', gap: space(2), marginTop: space(1) },
+  todoText: { fontSize: 14, color: colors.ink },
+  groupTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.muted,
+    marginTop: space(2),
+    marginBottom: space(2),
+    marginLeft: space(1),
+  },
   group: {
     backgroundColor: colors.card,
-    borderRadius: radius.card,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.line,
-    marginBottom: space(6),
+    marginBottom: space(4),
     overflow: 'hidden',
   },
-  row: { flexDirection: 'row', alignItems: 'center', gap: space(3), paddingHorizontal: space(4), minHeight: 60, paddingVertical: space(3) },
+  row: { flexDirection: 'row', alignItems: 'center', gap: space(3), paddingHorizontal: space(4), paddingVertical: space(3) },
   rowLine: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
-  rowIcon: { width: 20 },
-  rowText: type.label,
-  rowSub: { ...type.meta, fontSize: 13, color: colors.secondary, marginTop: 2 },
-  previewTitle: { ...type.meta, textAlign: 'center', marginBottom: space(3) },
+  rowIcon: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+  rowText: { fontSize: 16, fontWeight: '600', color: colors.ink },
+  rowSub: { fontSize: 13, color: colors.muted, marginTop: 1 },
+  previewTitle: { fontSize: 13, fontWeight: '700', color: colors.muted, textAlign: 'center', marginBottom: space(3) },
 });

@@ -1,85 +1,110 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button, TextLink } from '@/components/ui';
-import { colors, fonts, radius, space, type } from '@/lib/theme';
+import { Button } from '@/components/ui';
+import { colors, radius, space } from '@/lib/theme';
 
-// Written on the "exercise book page" below. Same three promises as before.
-const NOTES = [
-  'Only students. Everyone joins with their school email.',
-  'Like someone. If they like you back, you can chat.',
-  'Your surname, birthday and number stay private.',
+const SLIDES: { icon: keyof typeof Ionicons.glyphMap; title: string; body: string }[] = [
+  {
+    icon: 'school',
+    title: 'Only real students',
+    body: 'Everyone signs up with their school email, so you know the people you meet are students like you.',
+  },
+  {
+    icon: 'heart',
+    title: 'Dates, friends or a study buddy',
+    body: 'Say what you’re here for. Like someone, and if they like you back, it’s a match and you can chat.',
+  },
+  {
+    icon: 'shield-checkmark',
+    title: 'Safe by design',
+    body: 'Your surname, birthday and number stay private. Report or block anyone in one tap.',
+  },
 ];
 
-const RULE = 28; // distance between the ruled lines
+export default function Welcome() {
+  const { width } = useWindowDimensions();
+  const [page, setPage] = useState(0);
+  const scroller = useRef<ScrollViewInstance>(null);
+  const last = page === SLIDES.length - 1;
 
-/** The welcome moment: a page from a school exercise book, red margin and all. */
-function NotebookPage() {
+  const next = () => {
+    if (last) return router.push('/sign-in');
+    scroller.current?.scrollTo({ x: (page + 1) * width, animated: true });
+    setPage(page + 1);
+  };
+
   return (
-    <View style={styles.page}>
-      {Array.from({ length: 16 }, (_, i) => (
-        <View key={i} style={[styles.ruled, { top: space(4) + RULE * (i + 1) - 5 }]} />
-      ))}
-      <View style={styles.marginLine} />
-      <View style={styles.pageText}>
-        {NOTES.map((n, i) => (
-          <View key={n} style={styles.noteRow}>
-            <Text style={styles.noteNum}>{i + 1}</Text>
-            <Text style={styles.note}>{n}</Text>
+    <View style={{ flex: 1, backgroundColor: colors.primary }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.top}>
+          <Text style={styles.logo}>crushwave</Text>
+          {!last ? (
+            <Text style={styles.skip} onPress={() => router.push('/sign-in')}>
+              Skip
+            </Text>
+          ) : null}
+        </View>
+
+        <ScrollView
+          ref={scroller}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={(e) => setPage(Math.round(e.nativeEvent.contentOffset.x / width))}
+          style={{ flex: 1 }}
+        >
+          {SLIDES.map((s) => (
+            <View key={s.title} style={[styles.slide, { width }]}>
+              <View style={styles.iconCircle}>
+                <Ionicons name={s.icon} size={64} color="#fff" />
+              </View>
+              <Text style={styles.title}>{s.title}</Text>
+              <Text style={styles.body}>{s.body}</Text>
+            </View>
+          ))}
+        </ScrollView>
+
+        <View style={styles.bottom}>
+          <View style={styles.dots}>
+            {SLIDES.map((s, i) => (
+              <View key={s.title} style={[styles.dot, i === page && styles.dotOn]} />
+            ))}
           </View>
-        ))}
-      </View>
+          <Button title={last ? 'Get started' : 'Next'} onPress={next} style={styles.cta} textColor={colors.primaryDark} />
+          <Text style={styles.small} onPress={() => router.push('/sign-in')}>
+            Already have an account? <Text style={{ fontWeight: '700' }}>Sign in</Text>
+          </Text>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
 
-export default function Welcome() {
-  return (
-    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
-      <Text style={styles.logo}>Crushwave</Text>
-
-      <View style={styles.middle}>
-        <Text style={styles.headline}>Dates, friends and study partners from your campus</Text>
-        <NotebookPage />
-      </View>
-
-      <View style={styles.actions}>
-        <Button title="Get started" onPress={() => router.push('/sign-in')} />
-        <View style={styles.signIn}>
-          <Text style={type.small}>Already joined? </Text>
-          <TextLink title="Sign in" onPress={() => router.push('/sign-in')} />
-        </View>
-      </View>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: space(6) },
-  logo: { fontFamily: fonts.semibold, fontSize: 18, lineHeight: 24, color: colors.ink, marginTop: space(4) },
-  middle: { flex: 1, justifyContent: 'center' },
-  headline: { ...type.display, marginBottom: space(8) },
-  page: {
-    backgroundColor: colors.card,
-    borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: colors.line,
-    height: space(4) * 2 + RULE * 8,
-    overflow: 'hidden',
-    transform: [{ rotate: '-1.5deg' }],
-    shadowColor: '#1F1B16',
-    shadowOpacity: 0.06,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 2,
+  top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space(6), paddingTop: space(3) },
+  logo: { color: '#fff', fontSize: 28, fontWeight: '700', letterSpacing: -0.5 },
+  skip: { color: 'rgba(255,255,255,0.9)', fontSize: 16, fontWeight: '600', padding: space(2) },
+  slide: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space(8) },
+  iconCircle: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: space(8),
   },
-  ruled: { position: 'absolute', left: 0, right: 0, height: 1, backgroundColor: 'rgba(60,90,140,0.14)' },
-  marginLine: { position: 'absolute', top: 0, bottom: 0, left: 44, width: 1.5, backgroundColor: colors.accent },
-  pageText: { paddingTop: space(4), paddingRight: space(4) },
-  noteRow: { flexDirection: 'row', marginBottom: RULE },
-  noteNum: { width: 44, textAlign: 'center', fontFamily: fonts.medium, fontSize: 15, lineHeight: RULE, color: colors.accent },
-  note: { flex: 1, paddingLeft: space(3), fontFamily: fonts.regular, fontSize: 15, lineHeight: RULE, color: colors.ink },
-  actions: { paddingBottom: space(4) },
-  signIn: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: space(4) },
+  title: { color: '#fff', fontSize: 30, fontWeight: '700', textAlign: 'center', letterSpacing: -0.5 },
+  body: { color: 'rgba(255,255,255,0.92)', fontSize: 17, lineHeight: 25, textAlign: 'center', marginTop: space(3) },
+  bottom: { paddingHorizontal: space(6), paddingBottom: space(4) },
+  dots: { flexDirection: 'row', justifyContent: 'center', gap: space(2), marginBottom: space(5) },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.45)' },
+  dotOn: { width: 24, backgroundColor: '#fff' },
+  cta: { backgroundColor: '#fff', borderRadius: radius.pill },
+  small: { color: '#fff', textAlign: 'center', marginTop: space(4), fontSize: 15 },
 });

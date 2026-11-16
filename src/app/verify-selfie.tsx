@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth';
 import { VERIFICATION_POSES } from '@/lib/constants';
 import { takeVerificationSelfie } from '@/lib/photos';
 import { friendlyError, supabase } from '@/lib/supabase';
-import { space, type } from '@/lib/theme';
+import { colors, space } from '@/lib/theme';
 
 export default function VerifySelfie() {
   const { session, profile } = useAuth();
@@ -33,7 +33,7 @@ export default function VerifySelfie() {
         .from('verification_requests')
         .insert({ user_id: session!.user.id, selfie_path: path, pose });
       if (error) throw error;
-      Alert.alert('Selfie sent', 'We’ll compare it with your profile photos and add your verified tick, usually within a day.');
+      Alert.alert('Selfie sent', 'We’ll compare it with your profile photos and add your blue tick, usually within a day.');
       router.back();
     } catch (e) {
       Alert.alert('Could not send selfie', friendlyError(e));
@@ -46,15 +46,15 @@ export default function VerifySelfie() {
     return (
       <ScrollView contentContainerStyle={styles.wrap}>
         <H1>You’re verified</H1>
-        <P muted>Your verified tick shows on your profile.</P>
+        <P muted>Your blue tick shows on your profile.</P>
       </ScrollView>
     );
   }
 
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
-      <H1>Get verified</H1>
-      <P muted>A verified tick tells people your photos are really you.</P>
+      <H1>Get your blue tick</H1>
+      <P>Verified profiles get more likes because people know the photos are real.</P>
       {pending ? (
         <Card>
           <P>Your selfie is waiting for review. We’ll add your tick as soon as it’s checked.</P>
@@ -62,7 +62,7 @@ export default function VerifySelfie() {
       ) : (
         <>
           <Card>
-            <Text style={styles.poseLabel}>Copy this pose in your selfie</Text>
+            <Text style={styles.poseLabel}>Copy this pose in your selfie:</Text>
             <Text style={styles.pose}>{pose}</Text>
           </Card>
           <P muted>
@@ -78,6 +78,6 @@ export default function VerifySelfie() {
 
 const styles = StyleSheet.create({
   wrap: { padding: space(5), paddingBottom: space(16) },
-  poseLabel: { ...type.small, marginBottom: space(2) },
-  pose: type.title,
+  poseLabel: { fontSize: 14, color: colors.muted, marginBottom: space(2) },
+  pose: { fontSize: 22, fontWeight: '700', color: colors.ink },
 });

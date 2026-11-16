@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { Prompt } from '@/lib/auth';
 import {
@@ -12,9 +12,9 @@ import {
   type Gender,
   type LookingFor,
 } from '@/lib/constants';
-import { colors, fonts, radius, space, type } from '@/lib/theme';
+import { colors, radius, space } from '@/lib/theme';
 import { PhotoGrid } from './PhotoGrid';
-import { Chip, ChipRow, Field, FieldLabel, H2, P, TextLink } from './ui';
+import { Chip, ChipRow, Field, H2, P } from './ui';
 
 export type ProfileFormValues = {
   first_name: string;
@@ -94,7 +94,7 @@ export function ProfileForm({
   return (
     <View>
       <H2>Photos</H2>
-      <P muted>Up to 6 recent photos. Your main photo should clearly show your face.</P>
+      <P muted>Add up to 6 recent photos. Profiles with 3 or more photos get more likes. Your main photo should clearly show your face.</P>
       <PhotoGrid userId={userId} photos={value.photos} onChange={(p) => set('photos', p)} />
 
       <View style={{ height: space(6) }} />
@@ -107,14 +107,14 @@ export function ProfileForm({
         hint="Only your first name is shown. Never your surname."
       />
 
-      <FieldLabel>I am a</FieldLabel>
+      <Text style={styles.label}>I am a</Text>
       <ChipRow>
         {GENDERS.map((g) => (
           <Chip key={g.value} label={g.label} selected={value.gender === g.value} onPress={() => set('gender', g.value)} />
         ))}
       </ChipRow>
 
-      <FieldLabel>Show me</FieldLabel>
+      <Text style={styles.label}>Show me</Text>
       <ChipRow>
         {GENDERS.map((g) => (
           <Chip
@@ -126,7 +126,7 @@ export function ProfileForm({
         ))}
       </ChipRow>
 
-      <FieldLabel>I’m here for</FieldLabel>
+      <Text style={styles.label}>I’m here for</Text>
       <ChipRow>
         {LOOKING_FOR.map((l) => (
           <Chip
@@ -146,7 +146,7 @@ export function ProfileForm({
         maxLength={80}
       />
 
-      <FieldLabel>Level (optional)</FieldLabel>
+      <Text style={styles.label}>Level (optional)</Text>
       <ChipRow>
         {LEVELS.map((l) => (
           <Chip
@@ -175,7 +175,7 @@ export function ProfileForm({
         maxLength={500}
         multiline
         style={{ minHeight: 90, textAlignVertical: 'top' }}
-        hint={`${value.bio.length} of 500`}
+        hint={`${value.bio.length}/500`}
       />
 
       <H2>Interests</H2>
@@ -192,12 +192,12 @@ export function ProfileForm({
       </ChipRow>
 
       <H2>Prompts</H2>
-      <P muted>Pick up to 3 and answer them. They give people something to reply to.</P>
+      <P muted>Pick up to 3 and answer them. They make it much easier to start a chat.</P>
       <ChipRow>
         {(showAllPrompts ? PROMPTS : PROMPTS.slice(0, 5)).map((q) => (
           <Chip key={q} label={q} selected={!!value.prompts.find((p) => p.q === q)} onPress={() => togglePrompt(q)} />
         ))}
-        {!showAllPrompts ? <Chip label="More prompts" onPress={() => setShowAllPrompts(true)} /> : null}
+        {!showAllPrompts ? <Chip label="More…" onPress={() => setShowAllPrompts(true)} /> : null}
       </ChipRow>
       {value.prompts.map((p, idx) => (
         <View key={p.q} style={styles.promptBox}>
@@ -215,9 +215,9 @@ export function ProfileForm({
               set('prompts', next);
             }}
           />
-          <View style={{ marginTop: space(2) }}>
-            <TextLink title="Remove" muted onPress={() => togglePrompt(p.q)} />
-          </View>
+          <Pressable onPress={() => togglePrompt(p.q)}>
+            <Text style={styles.removePrompt}>Remove</Text>
+          </Pressable>
         </View>
       ))}
     </View>
@@ -225,14 +225,16 @@ export function ProfileForm({
 }
 
 const styles = StyleSheet.create({
+  label: { fontSize: 14, fontWeight: '600', color: colors.ink, marginBottom: space(2) },
   promptBox: {
     backgroundColor: colors.card,
-    borderRadius: radius.card,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.line,
     padding: space(4),
     marginBottom: space(3),
   },
-  promptQ: { ...type.small, marginBottom: space(2) },
-  promptInput: { fontFamily: fonts.regular, fontSize: 16, color: colors.ink, minHeight: 44 },
+  promptQ: { fontSize: 14, fontWeight: '700', color: colors.ink, marginBottom: space(2) },
+  promptInput: { fontSize: 16, color: colors.ink, minHeight: 44 },
+  removePrompt: { color: colors.muted, fontSize: 13, marginTop: space(2) },
 });

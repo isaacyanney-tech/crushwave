@@ -7,7 +7,7 @@ import { FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View
 import { usePhotoUrls } from '@/components/ProfileCard';
 import { H1, P } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
-import { colors, fonts, radius, space, type } from '@/lib/theme';
+import { colors, radius, space } from '@/lib/theme';
 
 export type MatchRow = {
   match_id: string;
@@ -77,7 +77,7 @@ export default function Matches() {
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
       >
         <H1>No matches yet</H1>
-        <P muted>When you and someone like each other, they appear here and you can start a chat.</P>
+        <P muted>When you and someone both like each other, they’ll show up here and you can start chatting.</P>
       </ScrollView>
     );
   }
@@ -89,7 +89,7 @@ export default function Matches() {
       refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
       ListHeaderComponent={
         fresh.length ? (
-          <View style={{ paddingTop: space(2) }}>
+          <View style={{ paddingTop: space(3) }}>
             <Text style={styles.section}>New matches</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space(4), gap: space(3) }}>
               {fresh.map((r) => (
@@ -99,29 +99,33 @@ export default function Matches() {
                 </Pressable>
               ))}
             </ScrollView>
-            <Text style={[styles.section, { marginTop: space(8) }]}>Chats</Text>
+            <Text style={[styles.section, { marginTop: space(5) }]}>Chats</Text>
           </View>
         ) : (
-          <Text style={[styles.section, { marginTop: space(2) }]}>Chats</Text>
+          <Text style={[styles.section, { marginTop: space(3) }]}>Chats</Text>
         )
       }
-      ListEmptyComponent={<Text style={styles.emptyChats}>No chats yet. Pick one of your new matches above and say hello.</Text>}
+      ListEmptyComponent={<P muted>{'   '}Say hi to one of your new matches.</P>}
       renderItem={({ item }) => (
         <Pressable style={styles.row} onPress={() => router.push(`/chat/${item.match_id}`)}>
           <Image source={urls[item.photos[0]] ? { uri: urls[item.photos[0]] } : undefined} style={styles.avatar} />
           <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space(1) }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <Text style={styles.name}>{item.first_name}</Text>
-              {item.is_verified ? <Ionicons name="checkmark-circle" size={16} color={colors.positive} accessibilityLabel="Verified" /> : null}
+              {item.is_verified ? <Ionicons name="checkmark-circle" size={16} color={colors.verified} /> : null}
             </View>
-            <Text style={[styles.preview, item.unread > 0 && { color: colors.ink, fontFamily: fonts.medium }]} numberOfLines={1}>
+            <Text style={[styles.preview, item.unread > 0 && { color: colors.ink, fontWeight: '700' }]} numberOfLines={1}>
               {item.last_message_mine ? 'You: ' : ''}
               {item.last_message}
             </Text>
           </View>
-          <View style={{ alignItems: 'flex-end', gap: space(1) }}>
+          <View style={{ alignItems: 'flex-end', gap: 4 }}>
             <Text style={styles.time}>{item.last_message_at ? timeAgo(item.last_message_at) : ''}</Text>
-            {item.unread > 0 ? <View style={styles.unreadDot} accessibilityLabel={`${item.unread} unread`} /> : null}
+            {item.unread > 0 ? (
+              <View style={styles.unread}>
+                <Text style={styles.unreadText}>{item.unread}</Text>
+              </View>
+            ) : null}
           </View>
         </Pressable>
       )}
@@ -130,15 +134,15 @@ export default function Matches() {
 }
 
 const styles = StyleSheet.create({
-  empty: { flexGrow: 1, justifyContent: 'center', padding: space(6) },
-  emptyChats: { ...type.small, marginHorizontal: space(4) },
-  section: { ...type.heading, marginHorizontal: space(4), marginBottom: space(3) },
-  bigAvatar: { width: 76, height: 96, borderRadius: radius.control, backgroundColor: colors.raised },
-  freshName: { ...type.label, fontSize: 14, marginTop: space(2) },
-  row: { flexDirection: 'row', alignItems: 'center', gap: space(3), paddingHorizontal: space(4), height: 76 },
-  avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.raised },
-  name: { ...type.label, fontSize: 16 },
-  preview: { ...type.small, color: colors.muted, marginTop: 2 },
-  time: { ...type.meta, fontVariant: ['tabular-nums'] },
-  unreadDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.accent },
+  empty: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: space(6) },
+  section: { fontSize: 13, fontWeight: '700', color: colors.muted, marginHorizontal: space(4), marginBottom: space(3) },
+  bigAvatar: { width: 76, height: 95, borderRadius: radius.md, backgroundColor: colors.line },
+  freshName: { marginTop: space(1), fontWeight: '600', color: colors.ink },
+  row: { flexDirection: 'row', alignItems: 'center', gap: space(3), paddingHorizontal: space(4), paddingVertical: space(3) },
+  avatar: { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.line },
+  name: { fontSize: 16, fontWeight: '700', color: colors.ink },
+  preview: { fontSize: 14, color: colors.muted, marginTop: 2 },
+  time: { fontSize: 12, color: colors.muted },
+  unread: { backgroundColor: colors.primary, borderRadius: radius.pill, minWidth: 20, paddingHorizontal: 6, alignItems: 'center' },
+  unreadText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 });
