@@ -53,7 +53,7 @@ The database is defined in `supabase/migrations/`. The small website (home, priv
 
 2. **Make codes short-lived.** Go to Authentication → Providers → Email. Set "Email OTP Expiration" to `600` seconds and "Email OTP Length" to `6`.
 3. **Set up a real email sender.** Go to Authentication → Emails → SMTP Settings. Supabase's built-in sender only delivers to your own team's addresses and only a few per hour, so students won't get codes until you connect an email sender. Brevo (free, 300 emails a day) or Resend both work.
-4. **Point links at the website.** Go to Authentication → URL Configuration and set "Site URL" to `https://crushwave-isaac-yanney.vercel.app/confirmed`. Without this, any link in an email opens `localhost`.
+4. **Point links at the website.** Go to Authentication → URL Configuration and set "Site URL" to `https://crushwave.vercel.app/confirmed`. Without this, any link in an email opens `localhost`.
 5. **Turn off sign-in methods you don't use.** Under Authentication → Providers, keep only Email on. Phone and anonymous sign-ins should stay off.
 
 ## Moderation (until there's an admin screen)
