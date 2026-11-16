@@ -107,5 +107,3 @@ on conflict (id) do update
   set first_name = excluded.first_name, bio = excluded.bio, prompts = excluded.prompts,
       interests = excluded.interests, photos = excluded.photos, is_demo = true;
 
-drop view demo_ids;
-drop table demo_seed;
