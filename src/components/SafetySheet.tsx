@@ -3,7 +3,7 @@ import { Alert, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, St
 
 import { REPORT_REASONS, type ReportReason } from '@/lib/constants';
 import { friendlyError, supabase } from '@/lib/supabase';
-import { colors, radius, space, type } from '@/lib/theme';
+import { colors, radius, space } from '@/lib/theme';
 import { useAuth } from '@/lib/auth';
 import { Button, Field, H2, P } from './ui';
 
@@ -101,9 +101,9 @@ export function SafetySheet({ visible, targetId, targetName, matchId, messageId,
         <ScrollView keyboardShouldPersistTaps="handled">
           {mode === 'menu' ? (
             <>
-              <H2>{targetName}</H2>
-              <Button title={`Report ${targetName}`} icon="flag-outline" variant="danger" onPress={() => setMode('report')} style={styles.gap} />
-              <Button title={`Block ${targetName}`} icon="remove-circle-outline" variant="secondary" onPress={block} loading={busy} style={styles.gap} />
+              <H2>Safety options for {targetName}</H2>
+              <Button title={`Report ${targetName}`} variant="danger" onPress={() => setMode('report')} style={styles.gap} />
+              <Button title={`Block ${targetName}`} variant="secondary" onPress={block} loading={busy} style={styles.gap} />
               {canUnmatch ? <Button title="Unmatch" variant="secondary" onPress={unmatch} style={styles.gap} /> : null}
               <Button title="Cancel" variant="ghost" onPress={close} />
             </>
@@ -115,16 +115,14 @@ export function SafetySheet({ visible, targetId, targetName, matchId, messageId,
                 <Pressable
                   key={r.value}
                   onPress={() => setReason(r.value)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: reason === r.value }}
-                  style={[styles.reason, reason === r.value && { borderColor: colors.ink, backgroundColor: colors.raised }]}
+                  style={[styles.reason, reason === r.value && { borderColor: colors.primary, backgroundColor: '#FFF0F3' }]}
                 >
                   <Text style={styles.reasonText}>{r.label}</Text>
                 </Pressable>
               ))}
               <View style={{ height: space(3) }} />
               <Field
-                label="Anything else we should know (optional)"
+                label="Anything else we should know? (optional)"
                 value={details}
                 onChangeText={setDetails}
                 multiline
@@ -136,7 +134,7 @@ export function SafetySheet({ visible, targetId, targetName, matchId, messageId,
                   If you are in danger right now, call the police on 191 or the DOVVSU helpline on 055 100 0900.
                 </P>
               ) : null}
-              <Button title="Send report" variant="primary" onPress={submitReport} disabled={!reason} loading={busy} style={styles.gap} />
+              <Button title="Send report" variant="danger" onPress={submitReport} disabled={!reason} loading={busy} style={styles.gap} />
               <Button title="Back" variant="ghost" onPress={() => setMode('menu')} />
             </>
           )}
@@ -147,11 +145,11 @@ export function SafetySheet({ visible, targetId, targetName, matchId, messageId,
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: colors.scrim },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)' },
   sheet: {
     backgroundColor: colors.bg,
-    borderTopLeftRadius: radius.sheet,
-    borderTopRightRadius: radius.sheet,
+    borderTopLeftRadius: radius.lg,
+    borderTopRightRadius: radius.lg,
     padding: space(5),
     paddingBottom: space(10),
     maxHeight: '85%',
@@ -161,11 +159,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.card,
-    borderRadius: radius.control,
-    paddingHorizontal: space(4),
-    minHeight: 48,
-    justifyContent: 'center',
+    borderRadius: radius.md,
+    padding: space(4),
     marginBottom: space(2),
   },
-  reasonText: type.label,
+  reasonText: { fontSize: 15, color: colors.ink, fontWeight: '500' },
 });

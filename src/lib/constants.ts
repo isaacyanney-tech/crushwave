@@ -15,10 +15,10 @@ export const GENDERS: { value: Gender; label: string; plural: string }[] = [
   { value: 'nonbinary', label: 'Non-binary', plural: 'Non-binary people' },
 ];
 
-export const LOOKING_FOR: { value: LookingFor; label: string }[] = [
-  { value: 'dating', label: 'Dating' },
-  { value: 'friendship', label: 'New friends' },
-  { value: 'study_partner', label: 'Study partner' },
+export const LOOKING_FOR: { value: LookingFor; label: string; emoji: string }[] = [
+  { value: 'dating', label: 'Dating', emoji: '💘' },
+  { value: 'friendship', label: 'New friends', emoji: '🤝' },
+  { value: 'study_partner', label: 'Study partner', emoji: '📚' },
 ];
 
 export const LEVELS: { value: number; label: string }[] = [
@@ -68,11 +68,11 @@ export const COMMUNITY_RULES = [
 ];
 
 export const VERIFICATION_POSES = [
-  'Hold up a peace sign next to your face',
-  'Give a thumbs up next to your chin',
-  'Touch your nose with one finger',
-  'Cover one eye with your hand',
-  'Wave at the camera with your hand open',
+  'Hold up a peace sign ✌️ next to your face',
+  'Give a thumbs up 👍 next to your chin',
+  'Touch your nose with one finger ☝️',
+  'Cover one eye with your hand 🙈',
+  'Wave at the camera 👋 with your hand open',
 ];
 
 // Set this to the safety contact email before launch (app stores require one).

@@ -23,7 +23,7 @@
     "android": {
       "package": "app.crushwave",
       "adaptiveIcon": {
-        "backgroundColor": "#C8402A",
+        "backgroundColor": "#FF4D6D",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -45,7 +45,7 @@
         {
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
-          "backgroundColor": "#C8402A"
+          "backgroundColor": "#FF4D6D"
         }
       ],
       [
@@ -59,10 +59,9 @@
       [
         "expo-notifications",
         {
-          "color": "#C8402A"
+          "color": "#FF4D6D"
         }
-      ],
-      "expo-font"
+      ]
     ],
     "experiments": {
       "typedRoutes": false

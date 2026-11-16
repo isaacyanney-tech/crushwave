@@ -1,13 +1,13 @@
-import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Text } from 'react-native';
 
-import { Button, Card, H2, MarginNote, P } from '@/components/ui';
+import { Button, Card, H2, P } from '@/components/ui';
 import { SUPPORT_EMAIL } from '@/lib/constants';
-import { space, type } from '@/lib/theme';
+import { colors, space } from '@/lib/theme';
 
 const NUMBERS = [
   { label: 'Police emergency', number: '191' },
   { label: 'Ambulance', number: '193' },
-  { label: 'DOVVSU helpline', number: '0551000900' },
+  { label: 'DOVVSU helpline (domestic violence & victim support)', number: '0551000900' },
 ];
 
 const TIPS = [
@@ -23,33 +23,31 @@ export default function Safety() {
   return (
     <ScrollView contentContainerStyle={{ padding: space(4), paddingBottom: space(16) }}>
       <H2>If you’re in danger now</H2>
-      <P muted>DOVVSU is the police unit for domestic violence and victim support.</P>
-      <View style={{ marginBottom: space(4) }}>
+      <Card>
         {NUMBERS.map((n) => (
           <Button
             key={n.number}
-            title={`${n.label}  ${n.number}`}
-            icon="call-outline"
+            title={`${n.label}: ${n.number}`}
             variant="secondary"
             onPress={() => Linking.openURL(`tel:${n.number}`)}
             style={{ marginBottom: space(2) }}
           />
         ))}
-      </View>
+      </Card>
 
       <H2>Dating safely</H2>
-      <MarginNote style={{ marginBottom: space(6), marginTop: space(2) }}>
-        {TIPS.map((t, i) => (
-          <Text key={t} style={[styles.tip, i === TIPS.length - 1 && { marginBottom: 0 }]}>
-            {t}
+      <Card>
+        {TIPS.map((t) => (
+          <Text key={t} style={styles.tip}>
+            •  {t}
           </Text>
         ))}
-      </MarginNote>
+      </Card>
 
       <H2>Reporting</H2>
       <Card>
         <P>
-          Tap the ••• on any profile or the shield in any chat, or press and hold a message to report it. Reports are
+          Tap the ••• on any profile, the shield in any chat, or press and hold a message to report it. Reports are
           private. The person is blocked for you straight away, and our team reviews every report within 24 hours.
         </P>
         <P muted>Reports of someone under 18 or of threats suspend that account immediately while we check.</P>
@@ -62,5 +60,5 @@ export default function Safety() {
 }
 
 const styles = StyleSheet.create({
-  tip: { ...type.body, fontSize: 15, lineHeight: 22, marginBottom: space(3) },
+  tip: { fontSize: 15, lineHeight: 22, color: colors.ink, marginBottom: space(2) },
 });
