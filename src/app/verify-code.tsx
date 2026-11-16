@@ -5,9 +5,9 @@ import type { TextInputInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { StepHeader } from '@/components/Steps';
-import { Button, H1, P } from '@/components/ui';
+import { Button, H1, P, TextLink } from '@/components/ui';
 import { friendlyError, supabase } from '@/lib/supabase';
-import { colors, radius, space } from '@/lib/theme';
+import { colors, fonts, radius, space } from '@/lib/theme';
 
 const RESEND_SECONDS = 60;
 const LENGTH = 6;
@@ -52,7 +52,7 @@ export default function VerifyCode() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.wrap}>
         <H1>Enter your code</H1>
         <P muted>
-          We emailed a 6-digit code to <Text style={{ fontWeight: '700', color: colors.ink }}>{email}</Text>. It can take a
+          We emailed a 6-digit code to <Text style={{ fontFamily: fonts.medium, color: colors.ink }}>{email}</Text>. It can take a
           minute to arrive. Check your spam or junk folder too.
         </P>
 
@@ -81,12 +81,8 @@ export default function VerifyCode() {
 
         <Button title="Continue" onPress={() => verify()} loading={busy} disabled={code.length < LENGTH} />
         <View style={styles.links}>
-          <Text style={[styles.link, wait > 0 && { color: colors.muted }]} onPress={wait > 0 ? undefined : resend}>
-            {wait > 0 ? `Resend code in ${wait}s` : 'Resend code'}
-          </Text>
-          <Text style={styles.link} onPress={() => router.back()}>
-            Change email
-          </Text>
+          <TextLink title={wait > 0 ? `Resend code in ${wait}s` : 'Resend code'} onPress={wait > 0 ? undefined : resend} />
+          <TextLink title="Change email" onPress={() => router.back()} />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -94,23 +90,22 @@ export default function VerifyCode() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, paddingHorizontal: space(5), paddingTop: space(4) },
-  boxes: { flexDirection: 'row', justifyContent: 'space-between', gap: space(2), marginVertical: space(5) },
+  wrap: { flex: 1, paddingHorizontal: space(5), paddingTop: space(6) },
+  boxes: { flexDirection: 'row', justifyContent: 'space-between', gap: space(2), marginTop: space(4), marginBottom: space(6) },
   box: {
     flex: 1,
     aspectRatio: 0.85,
     maxWidth: 56,
-    borderRadius: radius.md,
-    borderWidth: 1.5,
+    borderRadius: radius.control,
+    borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  boxActive: { borderColor: colors.primary },
-  boxFilled: { borderColor: colors.ink },
-  digit: { fontSize: 26, fontWeight: '800', color: colors.ink },
+  boxActive: { borderColor: colors.ink, borderWidth: 1.5 },
+  boxFilled: { backgroundColor: colors.raised },
+  digit: { fontFamily: fonts.medium, fontSize: 24, color: colors.ink, fontVariant: ['tabular-nums'] },
   hidden: { position: 'absolute', opacity: 0, height: 1, width: 1 },
-  links: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space(5) },
-  link: { color: colors.primaryDark, fontWeight: '700', fontSize: 15, padding: space(1) },
+  links: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space(6) },
 });

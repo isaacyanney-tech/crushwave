@@ -7,7 +7,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LEVELS, LOOKING_FOR } from '@/lib/constants';
 import type { Prompt } from '@/lib/auth';
 import { localPreview, signedUrls } from '@/lib/photos';
-import { colors, radius, space } from '@/lib/theme';
+import { MarginNote } from '@/components/ui';
+import { colors, fonts, radius, space, type } from '@/lib/theme';
 
 export type PublicProfile = {
   id: string;
@@ -77,7 +78,7 @@ export function ProfileCard({
   const facts = [profile.programme, level, profile.hall].filter(Boolean) as string[];
 
   return (
-    <ScrollView style={styles.wrap} contentContainerStyle={{ paddingBottom: space(28) }} showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.wrap} contentContainerStyle={{ paddingBottom: space(8) }} showsVerticalScrollIndicator={false}>
       <View style={styles.photoBox}>
         {photo && urls[photo] ? (
           <Image source={{ uri: urls[photo] }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
@@ -96,37 +97,38 @@ export function ProfileCard({
         </View>
         <View style={styles.dots}>
           {profile.photos.map((p, i) => (
-            <View key={p} style={[styles.dot, i === index && { backgroundColor: '#fff' }]} />
+            <View key={p} style={[styles.dot, i === index && { backgroundColor: colors.white }]} />
           ))}
         </View>
-        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.65)']} style={styles.nameBar} pointerEvents="box-none">
+        <LinearGradient colors={['rgba(20,17,14,0)', 'rgba(20,17,14,0.6)']} style={styles.nameBar} pointerEvents="box-none">
           <Text style={styles.name}>
-            {profile.first_name}, {profile.age}{' '}
+            {profile.first_name} <Text style={styles.age}>{profile.age}</Text>
           </Text>
-          {profile.is_verified ? <Ionicons name="checkmark-circle" size={24} color={colors.verified} /> : null}
+          {profile.is_verified ? (
+            <Ionicons name="checkmark-circle" size={20} color={colors.white} accessibilityLabel="Verified" style={{ marginLeft: space(2) }} />
+          ) : null}
           <View style={{ flex: 1 }} />
           {onMore ? (
-            <Pressable onPress={onMore} hitSlop={12} accessibilityLabel="Report or block">
-              <Ionicons name="ellipsis-horizontal-circle" size={30} color="#fff" />
+            <Pressable onPress={onMore} hitSlop={12} accessibilityLabel="Report or block" style={styles.more}>
+              <Ionicons name="ellipsis-horizontal" size={18} color={colors.white} />
             </Pressable>
           ) : null}
         </LinearGradient>
       </View>
 
       <View style={styles.body}>
-        {looking ? (
-          <Text style={styles.looking}>
-            Here for {looking.label.toLowerCase()}
+        {looking || facts.length ? (
+          <Text style={styles.facts}>
+            {[looking ? `Here for ${looking.label.toLowerCase()}` : null, ...facts].filter(Boolean).join('  ·  ')}
           </Text>
         ) : null}
-        {facts.length ? <Text style={styles.facts}>{facts.join('  ·  ')}</Text> : null}
         {profile.bio ? <Text style={styles.bio}>{profile.bio}</Text> : null}
 
         {profile.prompts.map((p) => (
-          <View key={p.q} style={styles.prompt}>
+          <MarginNote key={p.q} style={styles.prompt}>
             <Text style={styles.promptQ}>{p.q}</Text>
             <Text style={styles.promptA}>{p.a}</Text>
-          </View>
+          </MarginNote>
         ))}
 
         {profile.interests.length ? (
@@ -148,39 +150,46 @@ const styles = StyleSheet.create({
   wrap: { flex: 1 },
   photoBox: {
     aspectRatio: 4 / 5,
-    borderRadius: radius.lg,
+    borderRadius: radius.card,
     overflow: 'hidden',
-    backgroundColor: colors.line,
+    backgroundColor: colors.raised,
   },
   photoPlaceholder: { alignItems: 'center', justifyContent: 'center' },
-  dots: { position: 'absolute', top: space(3), left: space(3), right: space(3), flexDirection: 'row', gap: 4 },
-  dot: { flex: 1, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.45)' },
+  dots: { position: 'absolute', top: space(3), left: space(3), right: space(3), flexDirection: 'row', gap: space(1) },
+  dot: { flex: 1, height: 2, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.45)' },
   nameBar: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    padding: space(4),
-    paddingTop: space(10),
+    padding: space(5),
+    paddingTop: space(12),
     flexDirection: 'row',
     alignItems: 'center',
   },
-  name: { color: '#fff', fontSize: 28, fontWeight: '800' },
-  body: { paddingVertical: space(4) },
-  looking: { fontSize: 15, fontWeight: '600', color: colors.primaryDark, marginBottom: space(2) },
-  facts: { fontSize: 14, color: colors.muted, marginBottom: space(3) },
-  bio: { fontSize: 16, lineHeight: 23, color: colors.ink, marginBottom: space(4) },
-  prompt: {
-    backgroundColor: colors.card,
-    borderRadius: radius.md,
+  name: { fontFamily: fonts.display, fontSize: 32, lineHeight: 36, color: colors.white },
+  age: { fontFamily: fonts.regular, fontSize: 24, color: 'rgba(255,255,255,0.85)' },
+  more: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(20,17,14,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  body: { paddingTop: space(5), paddingBottom: space(4), paddingHorizontal: space(1) },
+  facts: { ...type.small, marginBottom: space(4) },
+  bio: { ...type.body, marginBottom: space(6) },
+  prompt: { marginBottom: space(6) },
+  promptQ: { ...type.small, marginBottom: space(1) },
+  promptA: { fontFamily: fonts.display, fontSize: 22, lineHeight: 28, color: colors.ink },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space(2) },
+  tag: {
     borderWidth: 1,
     borderColor: colors.line,
-    padding: space(4),
-    marginBottom: space(3),
+    borderRadius: radius.tag,
+    paddingHorizontal: space(2),
+    paddingVertical: space(1),
   },
-  promptQ: { fontSize: 13, fontWeight: '600', color: colors.muted, marginBottom: space(1) },
-  promptA: { fontSize: 18, fontWeight: '700', color: colors.ink },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space(2), marginTop: space(1) },
-  tag: { backgroundColor: '#FFE3E9', borderRadius: radius.pill, paddingHorizontal: space(3), paddingVertical: space(1.5) },
-  tagText: { color: colors.primaryDark, fontWeight: '600', fontSize: 13 },
+  tagText: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, color: colors.secondary },
 });

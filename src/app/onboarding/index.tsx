@@ -17,12 +17,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PhotoGrid } from '@/components/PhotoGrid';
 import { emptyProfileForm, toProfileColumns, type ProfileFormValues } from '@/components/ProfileForm';
-import { Eyebrow, OptionCard, StepHeader } from '@/components/Steps';
-import { Button, Chip, ChipRow, Field, H1, P } from '@/components/ui';
+import { OptionCard, StepHeader } from '@/components/Steps';
+import { Button, Chip, ChipRow, Field, FieldLabel, H1, MarginNote, P, TextLink } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { COMMUNITY_RULES, GENDERS, INTERESTS, LEVELS, LOOKING_FOR } from '@/lib/constants';
 import { friendlyError, supabase } from '@/lib/supabase';
-import { colors, radius, space } from '@/lib/theme';
+import { colors, fonts, radius, space, type } from '@/lib/theme';
 
 const LOOKING_FOR_ICON = { dating: 'heart-outline', friendship: 'people-outline', study_partner: 'book-outline' } as const;
 
@@ -54,8 +54,8 @@ function ageFrom(iso: string) {
 function Check({ checked, onPress, label }: { checked: boolean; onPress: () => void; label: string }) {
   return (
     <Pressable onPress={onPress} style={styles.checkRow} accessibilityRole="checkbox" accessibilityState={{ checked }}>
-      <View style={[styles.box, checked && { backgroundColor: colors.primary, borderColor: colors.primary }]}>
-        {checked ? <Ionicons name="checkmark" size={16} color="#fff" /> : null}
+      <View style={[styles.box, checked && { backgroundColor: colors.ink, borderColor: colors.ink }]}>
+        {checked ? <Ionicons name="checkmark" size={16} color={colors.white} /> : null}
       </View>
       <Text style={styles.checkLabel}>{label}</Text>
     </Pressable>
@@ -123,19 +123,18 @@ export default function Onboarding() {
         <ScrollView ref={scroll} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
           {step === 1 ? (
             <>
-              <Eyebrow>Welcome</Eyebrow>
-              <H1>Welcome to Crushwave</H1>
-              <P muted>Crushwave only works if everyone feels safe. Here are our 5 rules.</P>
-              {COMMUNITY_RULES.map((r, i) => (
-                <View key={r.title} style={styles.rule}>
-                  <Text style={styles.ruleNum}>{i + 1}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.ruleTitle}>{r.title}</Text>
+              <H1>Five rules before you start</H1>
+              <P muted>Crushwave only works if everyone feels safe here.</P>
+              <MarginNote style={{ marginBottom: space(6) }}>
+                {COMMUNITY_RULES.map((r, i) => (
+                  <View key={r.title} style={[styles.rule, i === COMMUNITY_RULES.length - 1 && { marginBottom: 0 }]}>
+                    <Text style={styles.ruleTitle}>
+                      {i + 1}. {r.title}
+                    </Text>
                     <Text style={styles.ruleBody}>{r.body}</Text>
                   </View>
-                </View>
-              ))}
-              <View style={{ height: space(3) }} />
+                ))}
+              </MarginNote>
               <Check
                 checked={agreed.rules}
                 onPress={() => setAgreed((a) => ({ ...a, rules: !a.rules }))}
@@ -147,17 +146,16 @@ export default function Onboarding() {
                 onPress={() => setAgreed((a) => ({ ...a, privacy: !a.privacy }))}
                 label="I agree that Crushwave keeps my profile, photos and chats to run the app. I can delete everything at any time."
               />
-              <Pressable onPress={() => router.push('/privacy')} hitSlop={8}>
-                <Text style={styles.link}>Read the privacy notice</Text>
-              </Pressable>
+              <View style={{ marginLeft: space(9) }}>
+                <TextLink title="Read the privacy notice" onPress={() => router.push('/privacy')} />
+              </View>
             </>
           ) : null}
 
           {step === 2 ? (
             <>
-              <Eyebrow>About you</Eyebrow>
               <H1>What should we call you?</H1>
-              <P muted>Only your first name and age are shown. Never your surname or birthday.</P>
+              <P muted>People see your first name and age, never your surname or birthday.</P>
               <Field
                 label="First name"
                 value={form.first_name}
@@ -167,7 +165,7 @@ export default function Onboarding() {
                 autoFocus
                 returnKeyType="next"
               />
-              <Text style={styles.label}>Date of birth</Text>
+              <FieldLabel>Date of birth</FieldLabel>
               <View style={styles.dobRow}>
                 <TextInput
                   style={[styles.dob, { flex: 1 }]}
@@ -217,8 +215,7 @@ export default function Onboarding() {
 
           {step === 3 ? (
             <>
-              <Eyebrow>About you</Eyebrow>
-              <H1>I am a…</H1>
+              <H1>I am a</H1>
               <ChipRow>
                 {GENDERS.map((g) => (
                   <Chip key={g.value} label={g.label} selected={form.gender === g.value} onPress={() => set('gender', g.value)} />
@@ -241,7 +238,6 @@ export default function Onboarding() {
 
           {step === 4 ? (
             <>
-              <Eyebrow>Your goal</Eyebrow>
               <H1>What are you here for?</H1>
               <P muted>This shows on your profile so people know what you want.</P>
               {LOOKING_FOR.map((l) => (
@@ -259,9 +255,8 @@ export default function Onboarding() {
 
           {step === 5 ? (
             <>
-              <Eyebrow>Campus life</Eyebrow>
               <H1>Your campus</H1>
-              <P muted>Optional, but it helps classmates and coursemates find you. You can skip this.</P>
+              <P muted>Optional. It helps coursemates and people in your hall find you.</P>
               <Field
                 label="Programme"
                 placeholder="e.g. BSc Accounting"
@@ -269,7 +264,7 @@ export default function Onboarding() {
                 onChangeText={(t) => set('programme', t)}
                 maxLength={80}
               />
-              <Text style={styles.label}>Level</Text>
+              <FieldLabel>Level</FieldLabel>
               <ChipRow>
                 {LEVELS.map((l) => (
                   <Chip
@@ -293,22 +288,19 @@ export default function Onboarding() {
 
           {step === 6 ? (
             <>
-              <Eyebrow>Your photo</Eyebrow>
               <H1>Add your main photo</H1>
               <P muted>
                 One clear photo of your face is all you need to start. You can add up to 5 more later from your profile.
               </P>
               <PhotoGrid userId={userId} photos={form.photos} onChange={(p) => set('photos', p)} max={1} />
-              <View style={styles.tip}>
-                <Ionicons name="bulb-outline" size={18} color={colors.primaryDark} />
-                <Text style={styles.tipText}>Good light, just you, no sunglasses. Group photos make it hard to know who you are.</Text>
-              </View>
+              <MarginNote style={{ marginTop: space(6) }}>
+                <Text style={styles.tipText}>Good light, just you, no sunglasses. In a group photo nobody knows which one is you.</Text>
+              </MarginNote>
             </>
           ) : null}
 
           {step === 7 ? (
             <>
-              <Eyebrow>Last step</Eyebrow>
               <H1>Your interests</H1>
               <P muted>Pick a few so people have something to talk about. Optional.</P>
               <ChipRow>
@@ -329,7 +321,7 @@ export default function Onboarding() {
                 maxLength={500}
                 multiline
                 style={{ minHeight: 90, textAlignVertical: 'top' }}
-                hint={`${form.bio.length}/500. You can add prompts and more photos later.`}
+                hint={`${form.bio.length} of 500. You can add prompts and more photos later.`}
               />
             </>
           ) : null}
@@ -342,7 +334,7 @@ export default function Onboarding() {
             disabled={!ready[step]}
             loading={busy}
           />
-          {step === 1 ? <Button title="Sign out" variant="ghost" onPress={signOut} style={{ marginTop: space(1) }} /> : null}
+          {step === 1 ? <Button title="Sign out" variant="ghost" onPress={signOut} style={{ marginTop: space(2) }} /> : null}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -350,67 +342,36 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  body: { paddingHorizontal: space(5), paddingTop: space(3), paddingBottom: space(8) },
-  footer: { paddingHorizontal: space(5), paddingTop: space(2), paddingBottom: space(3), backgroundColor: colors.bg },
-  rule: {
-    flexDirection: 'row',
-    gap: space(3),
-    padding: space(3),
-    backgroundColor: colors.card,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.line,
-    marginBottom: space(2),
-  },
-  ruleNum: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    textAlign: 'center',
-    lineHeight: 26,
-    overflow: 'hidden',
-    backgroundColor: colors.tint,
-    color: colors.primaryDark,
-    fontWeight: '800',
-  },
-  ruleTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, marginBottom: 2 },
-  ruleBody: { fontSize: 13, lineHeight: 19, color: colors.muted },
-  checkRow: { flexDirection: 'row', alignItems: 'flex-start', gap: space(3), marginBottom: space(3) },
+  body: { paddingHorizontal: space(5), paddingTop: space(4), paddingBottom: space(8) },
+  footer: { paddingHorizontal: space(5), paddingTop: space(3), paddingBottom: space(3), backgroundColor: colors.bg },
+  rule: { marginBottom: space(4) },
+  ruleTitle: { ...type.label, marginBottom: space(1) },
+  ruleBody: type.small,
+  checkRow: { flexDirection: 'row', alignItems: 'flex-start', gap: space(3), marginBottom: space(4) },
   box: {
     width: 24,
     height: 24,
-    borderRadius: 7,
-    borderWidth: 2,
+    borderRadius: 6,
+    borderWidth: 1.5,
     borderColor: colors.muted,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 1,
   },
-  checkLabel: { flex: 1, fontSize: 14, lineHeight: 20, color: colors.ink },
-  link: { color: colors.primaryDark, fontWeight: '600', marginLeft: 36 },
-  label: { fontSize: 14, fontWeight: '600', color: colors.ink, marginBottom: space(2) },
+  checkLabel: { ...type.body, flex: 1, fontSize: 15, lineHeight: 22 },
   dobRow: { flexDirection: 'row', gap: space(2) },
   dob: {
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.card,
-    borderRadius: radius.md,
+    borderRadius: radius.control,
     paddingVertical: space(3),
+    fontFamily: fonts.medium,
     fontSize: 20,
-    fontWeight: '600',
     textAlign: 'center',
     color: colors.ink,
+    fontVariant: ['tabular-nums'],
   },
-  bad: { color: colors.danger, fontSize: 13, marginTop: space(2) },
-  good: { color: colors.success, fontSize: 13, marginTop: space(2), lineHeight: 19 },
-  tip: {
-    flexDirection: 'row',
-    gap: space(2),
-    alignItems: 'flex-start',
-    backgroundColor: colors.tint,
-    borderRadius: radius.md,
-    padding: space(3),
-    marginTop: space(4),
-  },
-  tipText: { flex: 1, fontSize: 13, lineHeight: 19, color: colors.ink },
+  bad: { ...type.small, color: colors.danger, marginTop: space(2) },
+  good: { ...type.small, marginTop: space(2) },
+  tipText: type.small,
 });

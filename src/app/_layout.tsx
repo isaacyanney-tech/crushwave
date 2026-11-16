@@ -1,3 +1,4 @@
+import { useFonts } from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import { Stack, router, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -6,13 +7,14 @@ import { useEffect } from 'react';
 
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { registerForPush } from '@/lib/push';
-import { colors } from '@/lib/theme';
+import { colors, fonts } from '@/lib/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 /** Sends people to the right place: sign in, finish profile, or the app. */
-function Gate() {
-  const { loading, session, profile } = useAuth();
+function Gate({ fontsReady }: { fontsReady: boolean }) {
+  const { loading: authLoading, session, profile } = useAuth();
+  const loading = authLoading || !fontsReady;
   const segments = useSegments();
 
   useEffect(() => {
@@ -48,15 +50,26 @@ function Gate() {
 }
 
 export default function RootLayout() {
+  // Only the four weights we use, so the bundle stays small.
+  const [fontsLoaded, fontError] = useFonts({
+    Figtree_400Regular: require('@expo-google-fonts/figtree/400Regular/Figtree_400Regular.ttf'),
+    Figtree_500Medium: require('@expo-google-fonts/figtree/500Medium/Figtree_500Medium.ttf'),
+    Figtree_600SemiBold: require('@expo-google-fonts/figtree/600SemiBold/Figtree_600SemiBold.ttf'),
+    Newsreader_500Medium: require('@expo-google-fonts/newsreader/500Medium/Newsreader_500Medium.ttf'),
+  });
+  // If fonts fail to load the app still works with the system font.
+  const fontsReady = fontsLoaded || !!fontError;
+
   return (
     <AuthProvider>
       <StatusBar style="dark" />
-      <Gate />
+      <Gate fontsReady={fontsReady} />
       <Stack
         screenOptions={{
           headerTintColor: colors.ink,
           headerStyle: { backgroundColor: colors.bg },
           headerShadowVisible: false,
+          headerTitleStyle: { fontFamily: fonts.semibold, fontSize: 17, color: colors.ink },
           contentStyle: { backgroundColor: colors.bg },
           headerBackButtonDisplayMode: 'minimal',
         }}
