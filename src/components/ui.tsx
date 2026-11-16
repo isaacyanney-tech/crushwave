@@ -107,7 +107,7 @@ export function Banner({ text, tone = 'warning' }: { text: string; tone?: 'warni
         tone === 'warning' ? { backgroundColor: '#FFF4E0', borderColor: colors.warning } : { backgroundColor: '#EEF4FF', borderColor: '#B7CCF5' },
       ]}
     >
-      <Text style={styles.bannerText}>{tone === 'warning' ? '⚠️ ' : 'ℹ️ '}{text}</Text>
+      <Text style={styles.bannerText}>{text}</Text>
     </View>
   );
 }
@@ -143,7 +143,7 @@ export const styles = StyleSheet.create({
   },
   chipText: { fontSize: 14, color: colors.ink, fontWeight: '500' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space(2), marginBottom: space(4) },
-  h1: { fontSize: 28, fontWeight: '800', color: colors.ink, marginBottom: space(2) },
+  h1: { fontSize: 28, fontWeight: '700', color: colors.ink, marginBottom: space(2) },
   h2: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: space(2), marginTop: space(2) },
   p: { fontSize: 15, lineHeight: 22, color: colors.ink, marginBottom: space(3) },
   card: {

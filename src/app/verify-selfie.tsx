@@ -45,7 +45,7 @@ export default function VerifySelfie() {
   if (profile?.is_verified) {
     return (
       <ScrollView contentContainerStyle={styles.wrap}>
-        <H1>You’re verified ✅</H1>
+        <H1>You’re verified</H1>
         <P muted>Your blue tick shows on your profile.</P>
       </ScrollView>
     );
@@ -79,5 +79,5 @@ export default function VerifySelfie() {
 const styles = StyleSheet.create({
   wrap: { padding: space(5), paddingBottom: space(16) },
   poseLabel: { fontSize: 14, color: colors.muted, marginBottom: space(2) },
-  pose: { fontSize: 22, fontWeight: '800', color: colors.ink },
+  pose: { fontSize: 22, fontWeight: '700', color: colors.ink },
 });

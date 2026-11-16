@@ -108,14 +108,13 @@ export default function Discover() {
   if (!current) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 56 }}>🌊</Text>
         <H1>You’ve seen everyone for now</H1>
         <P muted>New students join every day. Check back later, change your filters, or invite your friends.</P>
         <Button
           title="Invite friends"
           onPress={() =>
             Share.share({
-              message: 'I’m on Crushwave, the dating and friends app just for verified students. Join with your student email!',
+              message: 'I’m on Crushwave, the dating and friends app just for verified students. Join with your student email.',
             })
           }
           style={{ alignSelf: 'stretch', marginBottom: space(3) }}
@@ -178,7 +177,7 @@ function MatchModal({
   return (
     <Modal visible={!!match} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.matchBg}>
-        <Text style={styles.matchTitle}>It’s a match! 💘</Text>
+        <Text style={styles.matchTitle}>It’s a match</Text>
         {photo && urls[photo] ? <Image source={{ uri: urls[photo] }} style={styles.matchPhoto} /> : null}
         <Text style={styles.matchText}>You and {match?.person.first_name} liked each other.</Text>
         <Button title="Send a message" onPress={onChat} style={{ alignSelf: 'stretch', marginBottom: space(3) }} />
@@ -219,13 +218,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     color: '#fff',
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '700',
     borderRadius: radius.pill,
     paddingHorizontal: 6,
     overflow: 'hidden',
   },
   matchBg: { flex: 1, backgroundColor: 'rgba(27,27,58,0.92)', alignItems: 'center', justifyContent: 'center', padding: space(8) },
-  matchTitle: { color: '#fff', fontSize: 34, fontWeight: '900', marginBottom: space(6) },
+  matchTitle: { color: '#fff', fontSize: 34, fontWeight: '700', marginBottom: space(6) },
   matchPhoto: { width: 180, height: 225, borderRadius: radius.lg, marginBottom: space(5), borderWidth: 4, borderColor: '#fff' },
   matchText: { color: '#fff', fontSize: 17, marginBottom: space(8), textAlign: 'center' },
 });

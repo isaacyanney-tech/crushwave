@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -40,7 +39,7 @@ export default function Welcome() {
   };
 
   return (
-    <LinearGradient colors={[colors.primary, colors.wave]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: colors.primary }}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.top}>
           <Text style={styles.logo}>crushwave</Text>
@@ -78,17 +77,17 @@ export default function Welcome() {
           </View>
           <Button title={last ? 'Get started' : 'Next'} onPress={next} style={styles.cta} textColor={colors.primaryDark} />
           <Text style={styles.small} onPress={() => router.push('/sign-in')}>
-            Already have an account? <Text style={{ fontWeight: '800' }}>Sign in</Text>
+            Already have an account? <Text style={{ fontWeight: '700' }}>Sign in</Text>
           </Text>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space(6), paddingTop: space(3) },
-  logo: { color: '#fff', fontSize: 28, fontWeight: '900', letterSpacing: -0.5 },
+  logo: { color: '#fff', fontSize: 28, fontWeight: '700', letterSpacing: -0.5 },
   skip: { color: 'rgba(255,255,255,0.9)', fontSize: 16, fontWeight: '600', padding: space(2) },
   slide: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space(8) },
   iconCircle: {
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: space(8),
   },
-  title: { color: '#fff', fontSize: 30, fontWeight: '900', textAlign: 'center', letterSpacing: -0.5 },
+  title: { color: '#fff', fontSize: 30, fontWeight: '700', textAlign: 'center', letterSpacing: -0.5 },
   body: { color: 'rgba(255,255,255,0.92)', fontSize: 17, lineHeight: 25, textAlign: 'center', marginTop: space(3) },
   bottom: { paddingHorizontal: space(6), paddingBottom: space(4) },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: space(2), marginBottom: space(5) },

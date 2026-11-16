@@ -20,7 +20,7 @@ export default function FiltersScreen() {
         {LOOKING_FOR.map((l) => (
           <Chip
             key={l.value}
-            label={`${l.emoji} ${l.label}`}
+            label={l.label}
             selected={f.lookingFor === l.value}
             onPress={() => setF({ ...f, lookingFor: f.lookingFor === l.value ? null : l.value })}
           />

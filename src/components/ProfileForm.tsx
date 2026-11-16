@@ -131,7 +131,7 @@ export function ProfileForm({
         {LOOKING_FOR.map((l) => (
           <Chip
             key={l.value}
-            label={`${l.emoji} ${l.label}`}
+            label={l.label}
             selected={value.looking_for === l.value}
             onPress={() => set('looking_for', l.value)}
           />

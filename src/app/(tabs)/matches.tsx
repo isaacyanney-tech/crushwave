@@ -76,7 +76,6 @@ export default function Matches() {
         contentContainerStyle={styles.empty}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
       >
-        <Text style={{ fontSize: 56 }}>💌</Text>
         <H1>No matches yet</H1>
         <P muted>When you and someone both like each other, they’ll show up here and you can start chatting.</P>
       </ScrollView>
@@ -106,7 +105,7 @@ export default function Matches() {
           <Text style={[styles.section, { marginTop: space(3) }]}>Chats</Text>
         )
       }
-      ListEmptyComponent={<P muted>{'   '}Say hi to one of your new matches!</P>}
+      ListEmptyComponent={<P muted>{'   '}Say hi to one of your new matches.</P>}
       renderItem={({ item }) => (
         <Pressable style={styles.row} onPress={() => router.push(`/chat/${item.match_id}`)}>
           <Image source={urls[item.photos[0]] ? { uri: urls[item.photos[0]] } : undefined} style={styles.avatar} />
@@ -136,7 +135,7 @@ export default function Matches() {
 
 const styles = StyleSheet.create({
   empty: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: space(6) },
-  section: { fontSize: 13, fontWeight: '800', color: colors.muted, textTransform: 'uppercase', marginHorizontal: space(4), marginBottom: space(3) },
+  section: { fontSize: 13, fontWeight: '700', color: colors.muted, marginHorizontal: space(4), marginBottom: space(3) },
   bigAvatar: { width: 76, height: 95, borderRadius: radius.md, backgroundColor: colors.line },
   freshName: { marginTop: space(1), fontWeight: '600', color: colors.ink },
   row: { flexDirection: 'row', alignItems: 'center', gap: space(3), paddingHorizontal: space(4), paddingVertical: space(3) },
@@ -145,5 +144,5 @@ const styles = StyleSheet.create({
   preview: { fontSize: 14, color: colors.muted, marginTop: 2 },
   time: { fontSize: 12, color: colors.muted },
   unread: { backgroundColor: colors.primary, borderRadius: radius.pill, minWidth: 20, paddingHorizontal: 6, alignItems: 'center' },
-  unreadText: { color: '#fff', fontSize: 12, fontWeight: '800' },
+  unreadText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 });

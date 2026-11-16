@@ -155,7 +155,7 @@ export default function Chat() {
           ListFooterComponent={
             other && !messages.length ? (
               <Text style={styles.starter}>
-                You matched with {other.first_name}! {other.prompts[0] ? `Ask about “${other.prompts[0].q}”` : 'Say hi 👋'}
+                You matched with {other.first_name}. {other.prompts[0] ? `Ask about “${other.prompts[0].q}”` : 'Say hi'}
               </Text>
             ) : undefined
           }

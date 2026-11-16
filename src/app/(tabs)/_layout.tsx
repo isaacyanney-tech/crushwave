@@ -34,7 +34,7 @@ export default function TabsLayout() {
         headerShadowVisible: false,
         headerStyle: { backgroundColor: colors.bg },
         headerTitleAlign: 'left',
-        headerTitleStyle: { fontWeight: '900', fontSize: 26, color: colors.ink },
+        headerTitleStyle: { fontWeight: '700', fontSize: 26, color: colors.ink },
         sceneStyle: { backgroundColor: colors.bg },
       }}
     >
@@ -45,7 +45,7 @@ export default function TabsLayout() {
           title: 'Chats',
           tabBarIcon: icon('chatbubbles', 'chatbubbles-outline'),
           tabBarBadge: unread > 0 ? (unread > 9 ? '9+' : unread) : undefined,
-          tabBarBadgeStyle: { backgroundColor: colors.primary, color: '#fff', fontSize: 11, fontWeight: '800' },
+          tabBarBadgeStyle: { backgroundColor: colors.primary, color: '#fff', fontSize: 11, fontWeight: '700' },
         }}
       />
       <Tabs.Screen name="me" options={{ title: 'Profile', tabBarIcon: icon('person-circle', 'person-circle-outline') }} />

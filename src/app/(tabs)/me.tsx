@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  name: { fontSize: 24, fontWeight: '800', color: colors.ink },
+  name: { fontSize: 24, fontWeight: '700', color: colors.ink },
   meta: { fontSize: 14, color: colors.muted, marginTop: 4 },
   headerBtns: { flexDirection: 'row', gap: space(3), marginTop: space(5), alignSelf: 'stretch' },
   strength: {
@@ -179,8 +179,6 @@ const styles = StyleSheet.create({
   groupTitle: {
     fontSize: 12,
     fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
     color: colors.muted,
     marginTop: space(2),
     marginBottom: space(2),

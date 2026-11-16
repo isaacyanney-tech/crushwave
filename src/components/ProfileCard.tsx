@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  name: { color: '#fff', fontSize: 28, fontWeight: '800' },
+  name: { color: '#fff', fontSize: 28, fontWeight: '700' },
   body: { paddingVertical: space(4) },
   looking: { fontSize: 15, fontWeight: '600', color: colors.primaryDark, marginBottom: space(2) },
   facts: { fontSize: 14, color: colors.muted, marginBottom: space(3) },

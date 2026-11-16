@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   boxActive: { borderColor: colors.primary },
   boxFilled: { borderColor: colors.ink },
-  digit: { fontSize: 26, fontWeight: '800', color: colors.ink },
+  digit: { fontSize: 26, fontWeight: '700', color: colors.ink },
   hidden: { position: 'absolute', opacity: 0, height: 1, width: 1 },
   links: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space(5) },
   link: { color: colors.primaryDark, fontWeight: '700', fontSize: 15, padding: space(1) },

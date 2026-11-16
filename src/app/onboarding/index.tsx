@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: colors.tint,
     color: colors.primaryDark,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   ruleTitle: { fontSize: 15, fontWeight: '700', color: colors.ink, marginBottom: 2 },
   ruleBody: { fontSize: 13, lineHeight: 19, color: colors.muted },
