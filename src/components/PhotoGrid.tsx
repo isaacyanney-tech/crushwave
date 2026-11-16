@@ -13,19 +13,22 @@ export function PhotoGrid({
   userId,
   photos,
   onChange,
+  max = MAX_PHOTOS,
 }: {
   userId: string;
   photos: string[];
   onChange: (next: string[]) => void;
+  max?: number;
 }) {
   const urls = usePhotoUrls(photos);
   const [uploading, setUploading] = useState(false);
 
-  const add = async () => {
+  const add = async (replace?: string) => {
     try {
       setUploading(true);
       const path = await pickProfilePhoto(userId);
-      if (path) onChange([...photos, path]);
+      if (!path) return;
+      onChange(replace ? photos.map((p) => (p === replace ? path : p)) : [...photos, path]);
     } catch (e) {
       Alert.alert('Could not add photo', friendlyError(e));
     } finally {
@@ -33,38 +36,75 @@ export function PhotoGrid({
     }
   };
 
-  const remove = (path: string) => {
-    Alert.alert('Remove this photo?', undefined, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: () => onChange(photos.filter((p) => p !== path)) },
-    ]);
+  const options = (path: string, index: number) => {
+    const buttons: { text: string; style?: 'cancel' | 'destructive'; onPress?: () => void }[] = [];
+    buttons.push({ text: 'Change photo', onPress: () => add(path) });
+    if (index > 0) buttons.push({ text: 'Make main photo', onPress: () => onChange([path, ...photos.filter((p) => p !== path)]) });
+    if (photos.length > 1) {
+      buttons.push({ text: 'Remove', style: 'destructive', onPress: () => onChange(photos.filter((p) => p !== path)) });
+    }
+    buttons.push({ text: 'Cancel', style: 'cancel' });
+    Alert.alert(index === 0 ? 'Main photo' : 'Photo', photos.length === 1 ? 'You need at least one photo.' : undefined, buttons);
   };
 
-  const makeMain = (path: string) => onChange([path, ...photos.filter((p) => p !== path)]);
+  // One big slot during sign-up.
+  if (max === 1) {
+    const path = photos[0];
+    return (
+      <Pressable
+        style={[styles.single, !path && styles.empty]}
+        onPress={() => (path ? options(path, 0) : add())}
+        disabled={uploading}
+        accessibilityLabel={path ? 'Change photo' : 'Add photo'}
+      >
+        {path && urls[path] ? <Image source={{ uri: urls[path] }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} /> : null}
+        {uploading ? (
+          <View style={styles.uploading}>
+            <ActivityIndicator color={colors.primary} size="large" />
+            <Text style={styles.uploadingText}>Uploading…</Text>
+          </View>
+        ) : !path ? (
+          <View style={{ alignItems: 'center', gap: space(2) }}>
+            <Ionicons name="camera" size={40} color={colors.primary} />
+            <Text style={styles.addText}>Tap to add a photo</Text>
+          </View>
+        ) : (
+          <View style={styles.changeTag}>
+            <Ionicons name="pencil" size={14} color="#fff" />
+            <Text style={styles.changeText}>Change</Text>
+          </View>
+        )}
+      </Pressable>
+    );
+  }
 
-  const slots = Array.from({ length: MAX_PHOTOS }, (_, i) => photos[i] ?? null);
+  const slots = Array.from({ length: max }, (_, i) => photos[i] ?? null);
 
   return (
     <View>
       <View style={styles.grid}>
         {slots.map((path, i) =>
           path ? (
-            <Pressable key={path} style={styles.slot} onLongPress={() => makeMain(path)} onPress={() => remove(path)}>
-              {urls[path] ? <Image source={{ uri: urls[path] }} style={StyleSheet.absoluteFill} contentFit="cover" /> : null}
+            <Pressable key={path} style={styles.slot} onPress={() => options(path, i)} accessibilityLabel="Photo options">
+              {urls[path] ? (
+                <Image source={{ uri: urls[path] }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
+              ) : (
+                <ActivityIndicator color={colors.primary} />
+              )}
               {i === 0 ? (
                 <View style={styles.mainTag}>
                   <Text style={styles.mainTagText}>Main</Text>
                 </View>
               ) : null}
-              <View style={styles.removeIcon}>
-                <Ionicons name="close" size={16} color="#fff" />
+              <View style={styles.editIcon}>
+                <Ionicons name="ellipsis-horizontal" size={14} color="#fff" />
               </View>
             </Pressable>
           ) : (
             <Pressable
               key={`empty-${i}`}
               style={[styles.slot, styles.empty]}
-              onPress={add}
+              onPress={() => add()}
               disabled={uploading || i !== photos.length}
               accessibilityLabel="Add photo"
             >
@@ -77,7 +117,7 @@ export function PhotoGrid({
           ),
         )}
       </View>
-      <Text style={styles.help}>Tap a photo to remove it. Press and hold to make it your main photo.</Text>
+      <Text style={styles.help}>Tap a photo to change it, remove it or make it your main photo.</Text>
     </View>
   );
 }
@@ -90,15 +130,41 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     overflow: 'hidden',
     backgroundColor: colors.line,
-  },
-  empty: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  single: {
+    width: '72%',
+    alignSelf: 'center',
+    aspectRatio: 4 / 5,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+    backgroundColor: colors.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  empty: {
     backgroundColor: colors.card,
     borderWidth: 1.5,
     borderStyle: 'dashed',
-    borderColor: colors.line,
+    borderColor: colors.primary,
   },
+  addText: { fontSize: 15, fontWeight: '700', color: colors.primaryDark },
+  uploading: { alignItems: 'center', gap: space(2) },
+  uploadingText: { fontSize: 13, color: colors.muted },
+  changeTag: {
+    position: 'absolute',
+    right: 10,
+    bottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: radius.pill,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  changeText: { color: '#fff', fontSize: 13, fontWeight: '700' },
   mainTag: {
     position: 'absolute',
     left: 6,
@@ -109,13 +175,13 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   mainTagText: { color: '#fff', fontSize: 11, fontWeight: '700' },
-  removeIcon: {
+  editIcon: {
     position: 'absolute',
     right: 6,
     top: 6,
     backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: radius.pill,
-    padding: 2,
+    padding: 3,
   },
   help: { fontSize: 12, color: colors.muted, marginTop: space(2) },
 });

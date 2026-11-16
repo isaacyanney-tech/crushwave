@@ -34,7 +34,7 @@ Only students with an email address from an enabled school can join. At launch t
 - **Sign-in sessions** are stored in the phone's secure keychain or keystore.
 - **No location, contacts or microphone permissions** are requested. They're blocked in `app.json`.
 
-The database is defined in `supabase/migrations/`.
+The database is defined in `supabase/migrations/`. The small website (home, privacy and the email-confirmed page) is in `web/` and is hosted on Vercel.
 
 ## Supabase project
 
@@ -43,7 +43,7 @@ The database is defined in `supabase/migrations/`.
 
 ### One-time dashboard settings (needed before sign-in works)
 
-1. **Show the code in the email.** Go to Authentication → Emails → Templates. In **both** "Magic Link" and "Confirm signup", replace the body with:
+1. **Show the code in the email.** Go to Authentication → Emails → Templates. In **both** "Confirm signup" (the first email a new student gets) and "Magic Link" (every sign-in after that), replace the body with:
 
    ```html
    <h2>Your Crushwave code</h2>
@@ -53,7 +53,8 @@ The database is defined in `supabase/migrations/`.
 
 2. **Make codes short-lived.** Go to Authentication → Providers → Email. Set "Email OTP Expiration" to `600` seconds and "Email OTP Length" to `6`.
 3. **Set up a real email sender.** Go to Authentication → Emails → SMTP Settings. Supabase's built-in sender only delivers to your own team's addresses and only a few per hour, so students won't get codes until you connect an email sender. Brevo (free, 300 emails a day) or Resend both work.
-4. **Turn off sign-in methods you don't use.** Under Authentication → Providers, keep only Email on. Phone and anonymous sign-ins should stay off.
+4. **Point links at the website.** Go to Authentication → URL Configuration and set "Site URL" to `https://crushwave-isaac-yanney.vercel.app/confirmed`. Without this, any link in an email opens `localhost`.
+5. **Turn off sign-in methods you don't use.** Under Authentication → Providers, keep only Email on. Phone and anonymous sign-ins should stay off.
 
 ## Moderation (until there's an admin screen)
 
@@ -82,7 +83,7 @@ npx eas-cli@latest build --profile preview --platform android
 ## Before public launch
 
 - [ ] Register with Ghana's Data Protection Commission.
-- [ ] Publish a privacy policy web page and set `SUPPORT_EMAIL` in `src/lib/constants.ts`.
+- [ ] Have a lawyer review the privacy page (`web/privacy.html`, live on the Vercel site) and set `SUPPORT_EMAIL` in `src/lib/constants.ts`.
 - [ ] Set up a real email sender (SMTP) and the code email template.
 - [ ] Upgrade to Supabase Pro for daily backups.
 - [ ] Create Google Play and Apple developer accounts.

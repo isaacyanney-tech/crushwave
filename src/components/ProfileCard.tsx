@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { LEVELS, LOOKING_FOR } from '@/lib/constants';
 import type { Prompt } from '@/lib/auth';
-import { signedUrls } from '@/lib/photos';
+import { localPreview, signedUrls } from '@/lib/photos';
 import { colors, radius, space } from '@/lib/theme';
 
 export type PublicProfile = {
@@ -23,18 +24,38 @@ export type PublicProfile = {
   is_verified: boolean;
 };
 
+/**
+ * Links for private photos. A photo just picked on this phone shows from the
+ * phone straight away; everything else uses a short-lived signed link. Missing
+ * links are retried once, in case the upload was still settling.
+ */
 export function usePhotoUrls(paths: string[]) {
-  const [urls, setUrls] = useState<Record<string, string>>({});
+  const [signed, setSigned] = useState<Record<string, string>>({});
   const key = paths.join('|');
   useEffect(() => {
     let alive = true;
-    if (paths.length) signedUrls(paths).then((u) => alive && setUrls(u));
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    const run = async (attempt: number) => {
+      if (!paths.length) return;
+      const u = await signedUrls(paths).catch(() => ({}) as Record<string, string>);
+      if (!alive) return;
+      setSigned((prev) => ({ ...prev, ...u }));
+      if (attempt === 0 && paths.some((p) => !u[p])) retry = setTimeout(() => run(1), 1500);
+    };
+    run(0);
     return () => {
       alive = false;
+      if (retry) clearTimeout(retry);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
-  return urls;
+
+  const out: Record<string, string> = {};
+  for (const p of paths) {
+    const url = localPreview(p) ?? signed[p];
+    if (url) out[p] = url;
+  }
+  return out;
 }
 
 export function ProfileCard({
@@ -78,7 +99,7 @@ export function ProfileCard({
             <View key={p} style={[styles.dot, i === index && { backgroundColor: '#fff' }]} />
           ))}
         </View>
-        <View style={styles.nameBar}>
+        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.65)']} style={styles.nameBar} pointerEvents="box-none">
           <Text style={styles.name}>
             {profile.first_name}, {profile.age}{' '}
           </Text>
@@ -89,13 +110,13 @@ export function ProfileCard({
               <Ionicons name="ellipsis-horizontal-circle" size={30} color="#fff" />
             </Pressable>
           ) : null}
-        </View>
+        </LinearGradient>
       </View>
 
       <View style={styles.body}>
         {looking ? (
           <Text style={styles.looking}>
-            {looking.emoji} Here for {looking.label.toLowerCase()}
+            Here for {looking.label.toLowerCase()}
           </Text>
         ) : null}
         {facts.length ? <Text style={styles.facts}>{facts.join('  ·  ')}</Text> : null}
@@ -143,7 +164,6 @@ const styles = StyleSheet.create({
     paddingTop: space(10),
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.28)',
   },
   name: { color: '#fff', fontSize: 28, fontWeight: '800' },
   body: { paddingVertical: space(4) },

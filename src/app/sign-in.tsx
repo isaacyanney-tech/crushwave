@@ -1,12 +1,13 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button, Field } from '@/components/ui';
+import { StepHeader } from '@/components/Steps';
+import { Button, Field, H1, P } from '@/components/ui';
 import { friendlyError, supabase } from '@/lib/supabase';
-import { colors, space } from '@/lib/theme';
+import { colors, radius, space } from '@/lib/theme';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -24,7 +25,7 @@ export default function SignIn() {
       if (!school || (Array.isArray(school) && school.length === 0)) {
         Alert.alert(
           'Use your student email',
-          'Crushwave is only open to verified students. Sign in with your school email address, not Gmail or Yahoo.',
+          'Crushwave is only open to verified students. Use your school email address, not Gmail or Yahoo.',
         );
         return;
       }
@@ -39,43 +40,57 @@ export default function SignIn() {
   };
 
   return (
-    <LinearGradient colors={[colors.primary, colors.wave]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.wrap}>
-          <View style={styles.hero}>
-            <Text style={styles.logo}>crushwave</Text>
-            <Text style={styles.tagline}>Date, make friends and find study partners. Only verified students.</Text>
-          </View>
-          <View style={styles.panel}>
-            <Text style={styles.title}>Sign in with your student email</Text>
-            <Field
-              placeholder="yourID@school-email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              autoComplete="email"
-              keyboardType="email-address"
-              textContentType="emailAddress"
-              returnKeyType="send"
-              onSubmitEditing={sendCode}
-            />
-            <Button title="Send me a code" onPress={sendCode} loading={busy} />
-            <Text style={styles.small}>
-              We’ll email you a 6-digit code. No password needed. By continuing you confirm you are 18 or older.
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top', 'bottom']}>
+      <StepHeader
+        step={1}
+        total={2}
+        label="Sign in or join"
+        onBack={router.canGoBack() ? () => router.back() : () => router.replace('/welcome')}
+      />
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+          <H1>Your student email</H1>
+          <P muted>New here or coming back, it’s the same. We’ll email you a 6-digit code. No password needed.</P>
+          <Field
+            placeholder="e.g. 10326626@upsamail.edu.gh"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect={false}
+            autoFocus
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            returnKeyType="send"
+            onSubmitEditing={sendCode}
+          />
+          <View style={styles.note}>
+            <Ionicons name="lock-closed-outline" size={18} color={colors.primaryDark} />
+            <Text style={styles.noteText}>
+              Your email only proves you’re a student. Nobody on Crushwave ever sees it.
             </Text>
           </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </LinearGradient>
+        </ScrollView>
+        <View style={styles.footer}>
+          <Button title="Send my code" onPress={sendCode} loading={busy} disabled={!email.trim()} />
+          <Text style={styles.small}>By continuing you confirm you are 18 or older.</Text>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, justifyContent: 'space-between', padding: space(6) },
-  hero: { marginTop: space(16) },
-  logo: { color: '#fff', fontSize: 46, fontWeight: '900', letterSpacing: -1 },
-  tagline: { color: 'rgba(255,255,255,0.92)', fontSize: 18, lineHeight: 26, marginTop: space(3), maxWidth: 320 },
-  panel: { backgroundColor: colors.bg, borderRadius: 24, padding: space(5) },
-  title: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: space(4) },
-  small: { fontSize: 12, color: colors.muted, marginTop: space(3), lineHeight: 18, textAlign: 'center' },
+  body: { paddingHorizontal: space(5), paddingTop: space(4) },
+  note: {
+    flexDirection: 'row',
+    gap: space(2),
+    alignItems: 'flex-start',
+    backgroundColor: colors.tint,
+    borderRadius: radius.md,
+    padding: space(3),
+  },
+  noteText: { flex: 1, fontSize: 13, lineHeight: 19, color: colors.ink },
+  footer: { paddingHorizontal: space(5), paddingBottom: space(3) },
+  small: { fontSize: 12, color: colors.muted, marginTop: space(3), textAlign: 'center' },
 });

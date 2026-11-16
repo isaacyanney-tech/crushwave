@@ -49,7 +49,7 @@ export function validateProfileForm(v: ProfileFormValues): string | null {
   if (!v.first_name.trim()) return 'Add your first name.';
   if (!v.gender) return 'Choose your gender.';
   if (!v.show_me.length) return 'Choose who you’d like to see.';
-  if (v.photos.length < MIN_PHOTOS) return `Add at least ${MIN_PHOTOS} photos of yourself.`;
+  if (v.photos.length < MIN_PHOTOS) return 'Add at least one photo of yourself.';
   if (v.prompts.some((p) => !p.a.trim())) return 'Answer each prompt you picked, or remove it.';
   return null;
 }
@@ -94,7 +94,7 @@ export function ProfileForm({
   return (
     <View>
       <H2>Photos</H2>
-      <P muted>Add {MIN_PHOTOS} to 6 recent photos where your face is clear. No group shots for your main photo.</P>
+      <P muted>Add up to 6 recent photos. Profiles with 3 or more photos get more likes. Your main photo should clearly show your face.</P>
       <PhotoGrid userId={userId} photos={value.photos} onChange={(p) => set('photos', p)} />
 
       <View style={{ height: space(6) }} />

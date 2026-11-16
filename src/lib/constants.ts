@@ -78,5 +78,5 @@ export const VERIFICATION_POSES = [
 // Set this to the safety contact email before launch (app stores require one).
 export const SUPPORT_EMAIL = '';
 
-export const MIN_PHOTOS = 3;
+export const MIN_PHOTOS = 1;
 export const MAX_PHOTOS = 6;

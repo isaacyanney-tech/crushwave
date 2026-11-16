@@ -10,9 +10,10 @@ type ButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   style?: StyleProp<ViewStyle>;
+  textColor?: string;
 };
 
-export function Button({ title, onPress, variant = 'primary', disabled, loading, style }: ButtonProps) {
+export function Button({ title, onPress, variant = 'primary', disabled, loading, style, textColor }: ButtonProps) {
   const isDisabled = disabled || loading;
   return (
     <Pressable
@@ -31,12 +32,13 @@ export function Button({ title, onPress, variant = 'primary', disabled, loading,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' || variant === 'danger' ? '#fff' : colors.ink} />
+        <ActivityIndicator color={textColor ?? (variant === 'primary' || variant === 'danger' ? '#fff' : colors.ink)} />
       ) : (
         <Text
           style={[
             styles.btnText,
             (variant === 'secondary' || variant === 'ghost') && { color: colors.ink },
+            textColor ? { color: textColor } : null,
           ]}
         >
           {title}
